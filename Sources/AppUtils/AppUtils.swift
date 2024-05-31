@@ -211,9 +211,12 @@ public class AppUtils {
                         
                     } else {
                         
-                        let alert = UIAlertController(title: "Permission Denied", message: "Cannot proceed without granting \(mediaType.rawValue) permission", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default))
-                        getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                        DispatchQueue.main.async {
+                            
+                            let alert = UIAlertController(title: "Permission Denied", message: "Cannot proceed without granting \(mediaType.rawValue) permission", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .default))
+                            getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                        }
                         
                         permission(false)
                     }
