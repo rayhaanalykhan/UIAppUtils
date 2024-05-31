@@ -175,18 +175,24 @@ public class AppUtils {
             
             if showGoToAppSettingsOption {
                 
-                let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Would you like to grant the \(mediaType.rawValue) permission now?\n\nNote: Changing permission will cause your app to refresh.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
-                    AppUtils.goToAppSettings()
-                })
-                alert.addAction(UIAlertAction(title: "No", style: .default))
-                getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Would you like to grant the \(mediaType.rawValue) permission now?\n\nNote: Changing permission will cause your app to refresh.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+                        AppUtils.goToAppSettings()
+                    })
+                    alert.addAction(UIAlertAction(title: "No", style: .default))
+                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
                 
             } else {
                 
-                let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
             }
             
             permission(false)
@@ -218,9 +224,12 @@ public class AppUtils {
             // If media permission is restricted, show an appropriate alert and call the completion handler with false
         case .restricted:
             
-            let alert = UIAlertController(title: "Hardware Access Restricted", message: "Your \(mediaType.rawValue) access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(title: "Hardware Access Restricted", message: "Your \(mediaType.rawValue) access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
             
             permission(false)
             
@@ -229,9 +238,11 @@ public class AppUtils {
             // Handle any future unknown cases
         @unknown default:
 
-            let alert = UIAlertController(title: "Unknown Error", message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Unknown Error", message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
             
             permission(false)
             
