@@ -33,7 +33,8 @@ To use AppUtils in your project, you can call its static methods directly:
 
     ```swift
     print("App Version: \(AppUtils.appVersion)")
-
+    ```    
+    ```swift
     print("App Build: \(AppUtils.appBuild)")
     ```
     
@@ -50,7 +51,7 @@ To use AppUtils in your project, you can call its static methods directly:
     ```
     ```swift 
     // Alternate
-    AppUtils.getTopMostViewController()?.present(someVC, animated: true, completion: nil)
+    AppUtils.getTopMostViewController()?.present(UIViewController(), animated: true, completion: nil) // replace UIViewController() with the controller you want to show
     ```
 
 3. **Take a Screenshot:** 
@@ -67,7 +68,7 @@ To use AppUtils in your project, you can call its static methods directly:
     ```
     ```swift 
     // Alternate
-    // someImageView.image = AppUtils.takeScreenshot() ?? UIImage()
+    // UIImageView().image = AppUtils.takeScreenshot() ?? UIImage() // replace UIImageView() with the your imageView.
     ```
 
 4. **Open Settings:**
