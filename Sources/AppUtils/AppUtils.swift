@@ -11,7 +11,6 @@ import UIKit
 import AVFoundation
 import StoreKit
 
-/// `AppUtils` is a utility class providing various methods for common tasks related to the UI and app permissions and functionality.
 public class AppUtils {
     
     private init() { }
