@@ -104,5 +104,5 @@ Contributors are welcomed to fork the project and submit pull requests. Please i
 
 ## Contact
 
-For further information, contact rayhaanalykhan at their [GitHub profile](https://github.com/rayhaanalykhan).
+For further information, contact me via email [rayhaanalykhan@gmail.com](mailto:rayhaanalykhan@gmail.com).
 
