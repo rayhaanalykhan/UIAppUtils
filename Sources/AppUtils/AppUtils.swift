@@ -25,7 +25,7 @@ public class AppUtils {
         return Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Build number not available"
     }
     
-    /// Returns the topmost view controller in the app's view hierarchy.
+    /// Retrieve the topmost view controller in the app's current key window's view hierarchy.
     ///
     /// This function traverses the view controller hierarchy starting from the root view controller of the key window,
     /// and iteratively finds the topmost view controller. It considers navigation controllers, tab bar controllers,
@@ -54,7 +54,7 @@ public class AppUtils {
         return currentViewController
     }
     
-    /// Takes a screenshot of the current key window's view hierarchy.
+    /// Capture a screenshot of the app's current key window's view hierarchy.
     ///
     /// This function captures the visual content of the key window by drawing its view hierarchy into an image context.
     /// The resulting image is returned as a `UIImage`.
@@ -129,6 +129,21 @@ public class AppUtils {
         }
     }
     
+    public enum MediaType: String {
+        
+        case audio = "Microphone"
+        case video = "Camera"
+        
+        var avMediaType: AVMediaType {
+            switch self {
+            case .audio:
+                return .audio
+            case .video:
+                return .video
+            }
+        }
+    }
+    
     /// Checks the permission status for accessing media hardware.
     ///
     /// This function handles all authorization statuses, including authorized, denied, not determined,
@@ -142,38 +157,10 @@ public class AppUtils {
     ///   - permission: A closure to be called with the result of the permission check, returning true if permission
     ///                 was granted and false otherwise.
     ///
-    public static func checkMediaPermission(mediaType: AVMediaType, showGoToAppSettingsOption: Bool = true, permission: @escaping(_ granted: Bool) -> Void) {
+    public static func checkMediaPermission(mediaType: MediaType, showGoToAppSettingsOption: Bool = true, permission: @escaping(_ granted: Bool) -> Void) {
         
         // Check the authorization status for the specified media type
-        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: mediaType)
-        
-        // Define a variable to hold the hardware type based on the media type
-        var permissionHardware: String?
-        
-        // Determine the hardware type based on the media type
-        switch mediaType {
-            
-        case .video:
-            permissionHardware = "Camera"
-            
-        case .audio:
-            permissionHardware = "Microphone"
-            
-        default:
-            permissionHardware = mediaType.rawValue
-        }
-        
-        // If the permission hardware type is not defined, display an error alert and return
-        guard let permissionHardware else {
-            
-            let alert = UIAlertController(title: "Error", message: "Hardware configuration is not defined", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            getTopMostViewController()?.present(alert, animated: true, completion: nil)
-            
-            permission(false)
-            
-            return
-        }
+        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: mediaType.avMediaType)
         
         // Handle different authorization statuses
         switch authorizationStatus {
@@ -188,7 +175,7 @@ public class AppUtils {
             
             if showGoToAppSettingsOption {
                 
-                let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(permissionHardware) permission. Would you like to grant the \(permissionHardware) permission now?\n\nNote: Changing permission will cause your app to refresh.", preferredStyle: .alert)
+                let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Would you like to grant the \(mediaType.rawValue) permission now?\n\nNote: Changing permission will cause your app to refresh.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
                     AppUtils.goToAppSettings()
                 })
@@ -197,7 +184,7 @@ public class AppUtils {
                 
             } else {
                 
-                let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(permissionHardware) permission. Please go to settings and grant the \(permissionHardware) permission to continue", preferredStyle: .alert)
+                let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 getTopMostViewController()?.present(alert, animated: true, completion: nil)
             }
@@ -211,14 +198,14 @@ public class AppUtils {
             
             DispatchQueue.main.async {
                 
-                AVCaptureDevice.requestAccess(for: mediaType) { granted in
+                AVCaptureDevice.requestAccess(for: mediaType.avMediaType) { granted in
                     
                     if granted {
                         permission(true)
                         
                     } else {
                         
-                        let alert = UIAlertController(title: "Permission Denied", message: "Cannot proceed without granting \(permissionHardware) permission", preferredStyle: .alert)
+                        let alert = UIAlertController(title: "Permission Denied", message: "Cannot proceed without granting \(mediaType.rawValue) permission", preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: "OK", style: .default))
                         getTopMostViewController()?.present(alert, animated: true, completion: nil)
                         
@@ -231,7 +218,7 @@ public class AppUtils {
             // If media permission is restricted, show an appropriate alert and call the completion handler with false
         case .restricted:
             
-            let alert = UIAlertController(title: "Hardware Access Restricted", message: "Your \(permissionHardware) access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Hardware Access Restricted", message: "Your \(mediaType.rawValue) access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             getTopMostViewController()?.present(alert, animated: true, completion: nil)
             
@@ -242,7 +229,7 @@ public class AppUtils {
             // Handle any future unknown cases
         @unknown default:
 
-            let alert = UIAlertController(title: "Unknown Error", message: "An unknown error occurred while checking \(permissionHardware) permissions. Please try again later or contact support for assistance.", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Unknown Error", message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default))
             getTopMostViewController()?.present(alert, animated: true, completion: nil)
             
