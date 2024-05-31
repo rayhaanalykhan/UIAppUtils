@@ -85,7 +85,7 @@ To use AppUtils in your project, you can call its static methods directly:
 
     Check for camera or microphone permissions and handle the response.
 
-    The function handles all authorization statuses and shows appropriate alert messages for these cases: not determine, first-time denied, previously denied, restricted, and unknown.
+    The function handles all authorization statuses and shows appropriate alert messages for all cases (not determine, first-time denied, previously denied, restricted, and unknown).
 
     ```swift 
     AppUtils.checkMediaPermission(mediaType: .video) { granted in // video or audio permission
