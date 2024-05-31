@@ -1,6 +1,6 @@
 # AppUtils
 
-A Swift utility library for various common tasks related to the UI, app permissions, and functionality.
+AppUtils is a robust UIKit utility library specializing in app-wide functionalities, designed to simplify app development.
 
 ## Features
 
@@ -35,7 +35,7 @@ To use AppUtils in your project, you can call its static methods directly:
     print("App Version: \(AppUtils.appVersion)")
 
     print("App Build: \(AppUtils.appBuild)")
-    ``` 
+    ```
     
 2. **Get Topmost View Controller:** 
     
@@ -55,10 +55,10 @@ To use AppUtils in your project, you can call its static methods directly:
 
     ```swift 
     if let screenshot = AppUtils.takeScreenshot() { 
-    UIImageWriteToSavedPhotosAlbum(screenshot, nil, nil, nil) 
-    print("Screenshot taken.") 
+        someImageView.image = screenshot
+        print("Screenshot taken.") 
     } else { 
-    print("Could not take screenshot.") 
+        print("Could not take screenshot.") 
     }
     ```
 
@@ -67,10 +67,10 @@ To use AppUtils in your project, you can call its static methods directly:
     Open the main settings app or the app-specific settings.
 
     ```swift
-    AppUtils.goToSettingsApp() // Open the main Settings app
+    AppUtils.goToSettingsApp() // Open the 'Settings' app of your device
 
-    AppUtils.goToAppSettings() // Open the settings for your app
-    ``` 
+    AppUtils.goToAppSettings() // Open the settings of your app
+    ```
     
 5. **Check Media Permissions:** 
 
@@ -78,11 +78,11 @@ To use AppUtils in your project, you can call its static methods directly:
 
     ```swift 
     AppUtils.checkMediaPermission(mediaType: .video) { granted in 
-    if granted { 
-    print("Camera access granted.") 
-    } else { 
-    print("Camera access denied.") 
-    } 
+        if granted { 
+            print("Camera access granted.") 
+        } else { 
+            print("Camera access denied.") 
+        } 
     }
     ```
 
