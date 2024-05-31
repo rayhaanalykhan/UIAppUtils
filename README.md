@@ -39,27 +39,35 @@ To use AppUtils in your project, you can call its static methods directly:
     
 2. **Get Topmost View Controller:** 
     
-    Retrieve the topmost view controller in the app's view hierarchy. 
+    Retrieve the topmost view controller in the app's current key window's view hierarchy.
 
     ```swift 
     if let topVC = AppUtils.getTopMostViewController() { 
-        print("Topmost View Controller: \(topVC)")
+        topVC.present(someVC, animated: true, completion: nil)
      } else { 
         print("No view controller found.")
      }
     ```
+    ```swift 
+    // Alternate
+    AppUtils.getTopMostViewController()?.present(someVC, animated: true, completion: nil)
+    ```
 
 3. **Take a Screenshot:** 
 
-    Capture a screenshot of the current key window's view hierarchy. 
+    Capture a screenshot of the app's current key window's view hierarchy.
 
     ```swift 
     if let screenshot = AppUtils.takeScreenshot() { 
-        someImageView.image = screenshot
+        // someImageView.image = screenshot
         print("Screenshot taken.") 
     } else { 
         print("Could not take screenshot.") 
     }
+    ```
+    ```swift 
+    // Alternate
+    // someImageView.image = AppUtils.takeScreenshot() ?? UIImage()
     ```
 
 4. **Open Settings:**
@@ -74,10 +82,12 @@ To use AppUtils in your project, you can call its static methods directly:
     
 5. **Check Media Permissions:** 
 
-    Check for camera or microphone permissions and handle the response. 
+    Check for camera or microphone permissions and handle the response.
+
+    The function handles all authorization statuses and shows appropriate alert messages for these cases: not determine, first-time denied, previously denied, restricted, and unknown.
 
     ```swift 
-    AppUtils.checkMediaPermission(mediaType: .video) { granted in 
+    AppUtils.checkMediaPermission(mediaType: .video) { granted in // video or audio permission
         if granted { 
             print("Camera access granted.") 
         } else { 
