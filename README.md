@@ -68,7 +68,7 @@ To use AppUtils in your project, you can call its static methods directly:
     ```
     ```swift 
     // Alternate
-    // UIImageView().image = AppUtils.takeScreenshot() ?? UIImage() // replace UIImageView() with the your imageView.
+    UIImageView().image = AppUtils.takeScreenshot() ?? UIImage() // replace UIImageView() with the your imageView.
     ```
 
 4. **Open Settings:**
