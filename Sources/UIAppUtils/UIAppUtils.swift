@@ -11,7 +11,7 @@ import UIKit
 import AVFoundation
 import StoreKit
 
-public class AppUtils {
+public class UIAppUtils {
     
     private init() { }
     
@@ -179,7 +179,7 @@ public class AppUtils {
                     
                     let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Would you like to grant the \(mediaType.rawValue) permission now?\n\nNote: Changing permission will cause your app to refresh.", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
-                        AppUtils.goToAppSettings()
+                        goToAppSettings()
                     })
                     alert.addAction(UIAlertAction(title: "No", style: .default))
                     getTopMostViewController()?.present(alert, animated: true, completion: nil)
@@ -242,6 +242,7 @@ public class AppUtils {
         @unknown default:
 
             DispatchQueue.main.async {
+                
                 let alert = UIAlertController(title: "Unknown Error", message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 getTopMostViewController()?.present(alert, animated: true, completion: nil)

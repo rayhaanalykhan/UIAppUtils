@@ -1,6 +1,6 @@
-# AppUtils
+# UIAppUtils
 
-AppUtils is a robust UIKit utility library specializing in app-wide functionalities, designed to simplify app development.
+UIAppUtils is a robust UIKit utility library specializing in app-wide functionalities, designed to simplify app development.
 
 ## Features
 
@@ -15,27 +15,27 @@ AppUtils is a robust UIKit utility library specializing in app-wide functionalit
 
 ### Swift Package Manager (SPM) using Xcode
 
-To integrate AppUtils into your Xcode project using Swift Package Manager, follow these steps:
+To integrate UIAppUtils into your Xcode project using Swift Package Manager, follow these steps:
 
 1. Open your project in Xcode.
 2. Navigate to the menu bar and click `File` > `Swift Packages` > `Add Package Dependency...`.
-3. In the search bar of the new window that appears, paste the following URL: `https://github.com/rayhaanalykhan/AppUtils.git`
+3. In the search bar of the new window that appears, paste the following URL: `https://github.com/rayhaanalykhan/UIAppUtils.git`
 4. Follow the on-screen instructions to choose the package options and the version you want to integrate.
 5. Once completed, Xcode will download the package and add it to your project navigator.
 
 ## Usage
 
-To use AppUtils in your project, you can call its static methods directly:
+To use UIAppUtils in your project, you can call its static methods directly:
 
 1. **Retrieve App Version and Build:**
 
     Get the current version and build number of the app:
 
     ```swift
-    print("App Version: \(AppUtils.appVersion)")
+    print("App Version: \(UIAppUtils.appVersion)")
     ```    
     ```swift
-    print("App Build: \(AppUtils.appBuild)")
+    print("App Build: \(UIAppUtils.appBuild)")
     ```
     
 2. **Get Topmost View Controller:** 
@@ -43,7 +43,7 @@ To use AppUtils in your project, you can call its static methods directly:
     Retrieve the topmost view controller in the app's current key window's view hierarchy.
 
     ```swift 
-    if let topVC = AppUtils.getTopMostViewController() { 
+    if let topVC = UIAppUtils.getTopMostViewController() { 
         topVC.present(someVC, animated: true, completion: nil)
      } else { 
         print("No view controller found.")
@@ -51,7 +51,7 @@ To use AppUtils in your project, you can call its static methods directly:
     ```
     ```swift 
     // Alternate
-    AppUtils.getTopMostViewController()?.present(UIViewController(), animated: true, completion: nil) // replace UIViewController() with the controller you want to show
+    UIAppUtils.getTopMostViewController()?.present(UIViewController(), animated: true, completion: nil) // replace UIViewController() with the controller you want to show
     ```
 
 3. **Take a Screenshot:** 
@@ -59,7 +59,7 @@ To use AppUtils in your project, you can call its static methods directly:
     Capture a screenshot of the app's current key window's view hierarchy.
 
     ```swift 
-    if let screenshot = AppUtils.takeScreenshot() { 
+    if let screenshot = UIAppUtils.takeScreenshot() { 
         // someImageView.image = screenshot
         print("Screenshot taken.") 
     } else { 
@@ -68,7 +68,7 @@ To use AppUtils in your project, you can call its static methods directly:
     ```
     ```swift 
     // Alternate
-    UIImageView().image = AppUtils.takeScreenshot() ?? UIImage() // replace UIImageView() with the your imageView.
+    UIImageView().image = UIAppUtils.takeScreenshot() ?? UIImage() // replace UIImageView() with the your imageView.
     ```
 
 4. **Open Settings:**
@@ -76,9 +76,9 @@ To use AppUtils in your project, you can call its static methods directly:
     Open the main settings app or the app-specific settings.
 
     ```swift
-    AppUtils.goToSettingsApp() // Open the 'Settings' app of your device
+    UIAppUtils.goToSettingsApp() // Open the 'Settings' app of your device
 
-    AppUtils.goToAppSettings() // Open the settings of your app
+    UIAppUtils.goToAppSettings() // Open the settings of your app
     ```
     
 5. **Check Media Permissions:** 
@@ -88,7 +88,7 @@ To use AppUtils in your project, you can call its static methods directly:
     The function handles all authorization statuses and shows appropriate alert messages for all cases (not determine, first-time denied, previously denied, restricted, and unknown).
 
     ```swift 
-    AppUtils.checkMediaPermission(mediaType: .video) { granted in // video or audio permission
+    UIAppUtils.checkMediaPermission(mediaType: .video) { granted in // video or audio permission
         if granted { 
             print("Camera access granted.") 
         } else { 
@@ -102,12 +102,12 @@ To use AppUtils in your project, you can call its static methods directly:
     Prompt the user to rate your app. 
 
     ```swift 
-    AppUtils.requestReview()
+    UIAppUtils.requestReview()
     ```
 
 ## License
 
-AppUtils is released under the MIT License. See the [LICENSE](https://github.com/rayhaanalykhan/AppUtils/blob/main/LICENSE.md) file for further details.
+UIAppUtils is released under the MIT License. See the [LICENSE](https://github.com/rayhaanalykhan/UIAppUtils/blob/main/LICENSE.md) file for further details.
 
 ## Contribution
 
