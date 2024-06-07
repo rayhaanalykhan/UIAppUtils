@@ -129,17 +129,19 @@ public class UIAppUtils {
         }
     }
     
-    public enum MediaType: String {
-        
-        case audio = "Microphone"
-        case video = "Camera"
-        
-        var avMediaType: AVMediaType {
-            switch self {
-            case .audio:
-                return .audio
-            case .video:
-                return .video
+    public class MediaType {
+        public enum MediaType: String {
+            
+            case audio = "Microphone"
+            case video = "Camera"
+            
+            var avMediaType: AVMediaType {
+                switch self {
+                case .audio:
+                    return .audio
+                case .video:
+                    return .video
+                }
             }
         }
     }
@@ -157,7 +159,7 @@ public class UIAppUtils {
     ///   - permission: A closure to be called with the result of the permission check, returning true if permission
     ///                 was granted and false otherwise.
     ///
-    public static func checkMediaPermission(mediaType: MediaType, showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
+    public static func checkMediaPermission(mediaType: MediaType.MediaType, showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
         
         // Check the authorization status for the specified media type
         let authorizationStatus = AVCaptureDevice.authorizationStatus(for: mediaType.avMediaType)
@@ -277,4 +279,5 @@ public class UIAppUtils {
         }
     }
 }
+
 #endif
