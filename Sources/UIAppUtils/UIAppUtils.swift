@@ -142,7 +142,7 @@ public class UIAppUtils {
     ///   - permission: A closure to be called with the result of the permission check, returning true if permission
     ///                 was granted and false otherwise.
     ///
-    public static func checkMediaPermission(mediaType: Zipped.MediaType, showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
+    public static func checkMediaPermission(mediaType: ZippedUIAppUtils.MediaType, showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
         
         // Check the authorization status for the specified media type
         let authorizationStatus = AVCaptureDevice.authorizationStatus(for: mediaType.avMediaType)
@@ -263,30 +263,27 @@ public class UIAppUtils {
     }
 }
 
-extension UIAppUtils {
+/// Utility class for logical encapsulation of custom types/utilities within the `UIAppUtils` namespace, ignore this class.
+///
+/// Ignore this class as it is made so that the user doesn't see unnecessary things in autocomplete of Xcode.
+public class ZippedUIAppUtils {
     
-    /// Utility class for logical encapsulation of custom types/utilities within the `UIAppUtils` namespace.
-    ///
-    /// Ignore this class as it is made so that the user doesn't see unnecessary things in autocomplete of Xcode.
-    public class Zipped {
+    /// Enum representing different types of media.
+    public enum MediaType: String {
         
-        /// Enum representing different types of media.
-        public enum MediaType: String {
-            
-            /// Represents access to the microphone.
-            case audio = "Microphone"
-            
-            /// Represents access to the camera.
-            case video = "Camera"
-            
-            /// Converts the media type to the corresponding `AVMediaType`.
-            var avMediaType: AVMediaType {
-                switch self {
-                case .audio:
-                    return .audio
-                case .video:
-                    return .video
-                }
+        /// Represents access to the microphone.
+        case audio = "Microphone"
+        
+        /// Represents access to the camera.
+        case video = "Camera"
+        
+        /// Converts the media type to the corresponding `AVMediaType`.
+        var avMediaType: AVMediaType {
+            switch self {
+            case .audio:
+                return .audio
+            case .video:
+                return .video
             }
         }
     }
