@@ -43,15 +43,17 @@ To use UIAppUtils in your project, you can call its static methods directly:
     Retrieve the topmost view controller in the app's current key window's view hierarchy.
 
     ```swift 
-    if let topVC = UIAppUtils.getTopMostViewController() { 
-        topVC.present(UIViewController(), animated: true, completion: nil) // replace UIViewController() with the controller you want to show
+    if let topVC = UIAppUtils.getTopMostViewController() {
+        // replace UIViewController() with the controller you want to show 
+        topVC.present(UIViewController(), animated: true, completion: nil) 
      } else { 
         print("No view controller found.")
      }
     ```
     ```swift 
     // Alternate
-    UIAppUtils.getTopMostViewController()?.present(UIViewController(), animated: true, completion: nil) // replace UIViewController() with the controller you want to show
+    // replace UIViewController() with the controller you want to show
+    UIAppUtils.getTopMostViewController()?.present(UIViewController(), animated: true, completion: nil) 
     ```
 
 3. **Take a Screenshot:** 
@@ -60,7 +62,8 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     ```swift 
     if let screenshot = UIAppUtils.takeScreenshot() { 
-        // UIImageView().image = screenshot // replace UIImageView() with the your imageView.
+        // replace UIImageView() with the your imageView.
+        UIImageView().image = screenshot 
         print("Screenshot taken.") 
     } else { 
         print("Could not take screenshot.") 
@@ -68,7 +71,8 @@ To use UIAppUtils in your project, you can call its static methods directly:
     ```
     ```swift 
     // Alternate
-    UIImageView().image = UIAppUtils.takeScreenshot() ?? UIImage() // replace UIImageView() with the your imageView.
+    // replace UIImageView() with the your imageView.
+    UIImageView().image = UIAppUtils.takeScreenshot() ?? UIImage() 
     ```
 
 4. **Open Settings:**
