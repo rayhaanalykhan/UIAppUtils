@@ -129,7 +129,7 @@ public class UIAppUtils {
         }
     }
     
-    enum MediaType: String {
+    public enum MediaType: String {
         
         case audio = "Microphone"
         case video = "Camera"
