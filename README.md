@@ -44,7 +44,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     ```swift 
     if let topVC = UIAppUtils.getTopMostViewController() { 
-        topVC.present(someVC, animated: true, completion: nil)
+        topVC.present(UIViewController(), animated: true, completion: nil) // replace UIViewController() with the controller you want to show
      } else { 
         print("No view controller found.")
      }
@@ -60,7 +60,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     ```swift 
     if let screenshot = UIAppUtils.takeScreenshot() { 
-        // someImageView.image = screenshot
+        // UIImageView().image = screenshot // replace UIImageView() with the your imageView.
         print("Screenshot taken.") 
     } else { 
         print("Could not take screenshot.") 
