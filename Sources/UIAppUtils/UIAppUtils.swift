@@ -129,23 +129,6 @@ public class UIAppUtils {
         }
     }
     
-    public class MediaType {
-        public enum MediaType: String {
-            
-            case audio = "Microphone"
-            case video = "Camera"
-            
-            var avMediaType: AVMediaType {
-                switch self {
-                case .audio:
-                    return .audio
-                case .video:
-                    return .video
-                }
-            }
-        }
-    }
-    
     /// Checks the permission status for accessing media hardware.
     ///
     /// This function handles all authorization statuses, including authorized, denied, not determined,
@@ -279,5 +262,32 @@ public class UIAppUtils {
         }
     }
 }
+
+/// Utility class for logical encapsulation of custom types/utilities within the `UIAppUtils` namespace.
+///
+/// Ignore this class as it is made so that the user doesn't see unnecessary things in autocomplete of Xcode.
+public class Zipped {
+    
+    /// Enum representing different types of media.
+    public enum MediaType: String {
+        
+        /// Represents access to the microphone.
+        case audio = "Microphone"
+        
+        /// Represents access to the camera.
+        case video = "Camera"
+        
+        /// Converts the media type to the corresponding `AVMediaType`.
+        var avMediaType: AVMediaType {
+            switch self {
+            case .audio:
+                return .audio
+            case .video:
+                return .video
+            }
+        }
+    }
+}
+
 
 #endif
