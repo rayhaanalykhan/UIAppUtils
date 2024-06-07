@@ -263,27 +263,30 @@ public class UIAppUtils {
     }
 }
 
-/// Utility class for logical encapsulation of custom types/utilities within the `UIAppUtils` namespace.
-///
-/// Ignore this class as it is made so that the user doesn't see unnecessary things in autocomplete of Xcode.
-public class Zipped {
+extension UIAppUtils {
     
-    /// Enum representing different types of media.
-    public enum MediaType: String {
+    /// Utility class for logical encapsulation of custom types/utilities within the `UIAppUtils` namespace.
+    ///
+    /// Ignore this class as it is made so that the user doesn't see unnecessary things in autocomplete of Xcode.
+    public class Zipped {
         
-        /// Represents access to the microphone.
-        case audio = "Microphone"
-        
-        /// Represents access to the camera.
-        case video = "Camera"
-        
-        /// Converts the media type to the corresponding `AVMediaType`.
-        var avMediaType: AVMediaType {
-            switch self {
-            case .audio:
-                return .audio
-            case .video:
-                return .video
+        /// Enum representing different types of media.
+        public enum MediaType: String {
+            
+            /// Represents access to the microphone.
+            case audio = "Microphone"
+            
+            /// Represents access to the camera.
+            case video = "Camera"
+            
+            /// Converts the media type to the corresponding `AVMediaType`.
+            var avMediaType: AVMediaType {
+                switch self {
+                case .audio:
+                    return .audio
+                case .video:
+                    return .video
+                }
             }
         }
     }
