@@ -129,7 +129,7 @@ public class UIAppUtils {
         }
     }
     
-    public enum MediaType: String {
+    enum MediaType: String {
         
         case audio = "Microphone"
         case video = "Camera"
@@ -153,11 +153,11 @@ public class UIAppUtils {
     /// - Parameters:
     ///   - mediaType: The type of media hardware to check permission for, such as video or audio.
     ///   - showGoToAppSettingsOption: A boolean value indicating whether to show an option to navigate to app settings
-    ///                             for granting permission if permission has been previously denied (default is true).
+    ///                             for granting permission if permission has been previously denied.
     ///   - permission: A closure to be called with the result of the permission check, returning true if permission
     ///                 was granted and false otherwise.
     ///
-    public static func checkMediaPermission(mediaType: MediaType, showGoToAppSettingsOption: Bool = true, permission: @escaping(_ granted: Bool) -> Void) {
+    public static func checkMediaPermission(mediaType: MediaType, showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
         
         // Check the authorization status for the specified media type
         let authorizationStatus = AVCaptureDevice.authorizationStatus(for: mediaType.avMediaType)
