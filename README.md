@@ -92,7 +92,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
     The function handles all authorization statuses and shows appropriate alert messages for all cases (not determine, first-time denied, previously denied, restricted, and unknown).
 
     ```swift 
-    UIAppUtils.checkMediaPermission(mediaType: .video, showGoToAppSettingsOption: true) { granted in // show an option to navigate to app settings for                                                                                                                if permission has been previously denied
+    UIAppUtils.checkMediaPermission(mediaType: .video, showGoToAppSettingsOption: true) { granted in // show an option to navigate to app settings for if permission has been previously denied.
         if granted { 
             print("Camera access granted.") 
         } else { 
