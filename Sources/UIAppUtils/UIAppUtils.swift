@@ -382,7 +382,7 @@ extension UIAppUtils: MFMailComposeViewControllerDelegate {
     // MARK: - MFMailComposeViewControllerDelegate Methods
     
     // Dismisses the mail compose view controller, handles any errors, and call the completion handler with the mail composition result if no error occurs.
-    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+    public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         
         // Dismiss the mail compose view controller.
         controller.dismiss(animated: true, completion: nil)
@@ -398,12 +398,12 @@ extension UIAppUtils: MFMailComposeViewControllerDelegate {
                     preferredStyle: .alert
                 )
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
-                getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
             }
             
         } else {
             // Call the completion handler with the mail composition result
-            emailCompletion?(result)
+            UIAppUtils.emailCompletion?(result)
         }
     }
 }
