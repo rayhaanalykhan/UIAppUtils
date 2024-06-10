@@ -107,8 +107,10 @@ public class UIAppUtils {
     ///
     /// This function checks if the provided URL can be opened using the `canOpenURL(_:)` method.
     /// If the URL can be opened, it is opened using the `open(_:options:completionHandler:)` method.
+    /// If the URL cannot be opened or the device does not support opening it, nothing happens.
     ///
     /// - Parameter url: The URL to be opened.
+    /// - Returns: A boolean value indicating whether the URL could be opened (`true`) or not (`false`).
     ///
     /// - Note: This function allows your app to open various types of URLs, including external URLs (e.g., web links) and custom URL schemes.
     /// It first checks if the device is capable of opening the given URL using the `canOpenURL(_:)` method.
@@ -119,15 +121,22 @@ public class UIAppUtils {
     /// - Settings URLs are used to open specific sections of the Settings app on the device.
     /// - Deep links are URLs that are designed to navigate to a specific piece of content within your app.
     /// - Third-Party App URLs allow opening specific content or performing actions within third-party apps, if installed on the device.
-    /// If the URL cannot be opened or the device does not support opening it, nothing happens.
     ///
     /// - SeeAlso: `canOpenURL(_:)`, `open(_:options:completionHandler:)`
-    public static func openURL(url: URL) {
+    ///
+    /// - Important: The return value of this function is `@discardableResult`, indicating that it can be safely ignored if not needed.
+    @discardableResult
+    public static func openURL(url: URL) -> Bool {
         
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            return true
+            
+        } else {
+            return false
         }
     }
+
     
     /// Checks the permission status for accessing media hardware.
     ///
