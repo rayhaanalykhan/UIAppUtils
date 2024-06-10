@@ -87,12 +87,12 @@ To use UIAppUtils in your project, you can call its static methods directly:
     
 5. **Check Media Permissions:** 
 
-    Check for camera or microphone permissions and handle the response.
+    Check for camera(video) or microphone(audio) permissions and handle the response.
 
     The function handles all authorization statuses and shows appropriate alert messages for all cases (not determine, first-time denied, previously denied, restricted, and unknown).
 
     ```swift 
-    UIAppUtils.checkMediaPermission(mediaType: .video) { granted in // video or audio permission
+    UIAppUtils.checkMediaPermission(mediaType: .video, showGoToAppSettingsOption: true) { granted in // show an option to navigate to app settings for if permission has been previously denied.
         if granted { 
             print("Camera access granted.") 
         } else { 
