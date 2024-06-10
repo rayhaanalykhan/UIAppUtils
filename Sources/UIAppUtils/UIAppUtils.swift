@@ -10,10 +10,13 @@
 import UIKit
 import AVFoundation
 import StoreKit
+import MessageUI
 
 public class UIAppUtils {
     
     private init() { }
+    
+    private static var emailCompletion: ((_ result: MFMailComposeResult) -> Void)?
     
     /// Returns the current version number of the app, or a default message if not found.
     static var appVersion: String {
@@ -268,6 +271,139 @@ public class UIAppUtils {
         } else {
             
             SKStoreReviewController.requestReview()
+        }
+    }
+}
+
+extension UIAppUtils: MFMailComposeViewControllerDelegate {
+    
+    /**
+     Opens the email intent from the specified view controller or the topmost view controller if not provided.
+     
+     - Parameters:
+        - viewController: The view controller from which to present the mail compose view controller. Defaults to the topmost view controller.
+        - emailAddresses: An array of email addresses to set as recipients.
+        - subject: The subject of the email.
+        - body: The body of the email.
+        - completion: An optional completion handler that is called with the result of the mail composition.
+     
+    This function attempts to present the system's email composition interface (`MFMailComposeViewController`) from the specified or topmost view controller. If the device is not capable of sending emails, it prompts the user with an alert offering to open the default mail app externally.
+     
+     - Important: The completion handler will only be called if the email is sent within the app using `MFMailComposeViewController`.
+     */
+    static func openEmailIntent(from viewController: UIViewController? = getTopMostViewController(), with emailAddresses: [String], subject: String?, body: String?, completion: ((_ result: MFMailComposeResult) -> Void)? = nil) {
+        
+        // Ensure the view controller is not nil.
+        guard let viewController else {
+            return
+        }
+        
+        // Check if the device is capable of sending emails.
+        if MFMailComposeViewController.canSendMail() {
+            
+            // Store the completion handler to be used later.
+            emailCompletion = completion
+            
+            // Create an instance of MFMailComposeViewController.
+            let composeVC = MFMailComposeViewController()
+            
+            // Set the delegate to handle mail compose result callbacks.
+            composeVC.mailComposeDelegate = viewController as? MFMailComposeViewControllerDelegate
+            
+            // Set the recipients, subject, and body of the email.
+            composeVC.setToRecipients(emailAddresses)
+            composeVC.setSubject(subject ?? "")
+            composeVC.setMessageBody(body ?? "", isHTML: false)
+            
+            // Present the mail compose view controller.
+            viewController.present(composeVC, animated: true)
+            
+        } else {
+            
+            // Print a message if mail services are not available.
+            print("Mail services are not available")
+            
+            DispatchQueue.main.async {
+                // Create an alert to inform the user that mail services are not available.
+                let alert = UIAlertController(
+                    title: "Mail Services Unavailable",
+                    message: "It seems you've not setup mail services on your device. Would you like to open the mail app externally to send an email?",
+                    preferredStyle: .alert
+                )
+                
+                // Add a 'Yes' action to the alert to open the default mail app.
+                alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+                    sendMailOnExternalApp(viewController: viewController, emailAddresses: emailAddresses, subject: subject ?? "", body: body ?? "")
+                })
+                
+                // Add a 'No' action to the alert.
+                alert.addAction(UIAlertAction(title: "No", style: .default))
+                
+                // Present the alert to the user.
+                viewController.present(alert, animated: true, completion: nil)
+            }
+        }
+    }
+
+    // Private static function to send an email using the default mail app if the in-app mail services are not available.
+    // It takes an array of email addresses, subject, and body as parameters.
+    private static func sendMailOnExternalApp(viewController: UIViewController, emailAddresses: [String], subject: String, body: String) {
+        
+        // Create URL components for the mailto scheme.
+        var urlComponents = URLComponents()
+        
+        urlComponents.scheme = "mailto"
+        urlComponents.path = emailAddresses.joined(separator: ",")
+        urlComponents.queryItems = [
+            URLQueryItem(name: "subject", value: subject),
+            URLQueryItem(name: "body", value: body)
+        ]
+        
+        // Ensure the URL is valid.
+        if let emailURL = urlComponents.url {
+            
+            // Attempt to open the email URL.
+            if openURL(url: emailURL) == false {
+                
+                // If the URL cannot be opened, show an alert to the user.
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(
+                        title: "No Email App Found",
+                        message: "No email app was found on this device",
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    viewController.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
+    }
+    
+    // MARK: - MFMailComposeViewControllerDelegate Methods
+    
+    // Dismisses the mail compose view controller, handles any errors, and call the completion handler with the mail composition result if no error occurs.
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        
+        // Dismiss the mail compose view controller.
+        controller.dismiss(animated: true, completion: nil)
+        
+        // Handle any errors during mail composition
+        if let error {
+            
+            // Show an alert with the error message
+            DispatchQueue.main.async {
+                let alert = UIAlertController(
+                    title: "Mail Compose Error",
+                    message: error.localizedDescription,
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            
+        } else {
+            // Call the completion handler with the mail composition result
+            emailCompletion?(result)
         }
     }
 }
