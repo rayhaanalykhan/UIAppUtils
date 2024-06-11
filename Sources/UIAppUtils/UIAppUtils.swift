@@ -9,6 +9,7 @@
 #if canImport(UIKit)
 import UIKit
 import StoreKit
+import AVFoundation
 import MessageUI
 
 public class UIAppUtils {
