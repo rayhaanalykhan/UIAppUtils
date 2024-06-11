@@ -8,7 +8,6 @@
 
 #if canImport(UIKit)
 import UIKit
-import AVFoundation
 import StoreKit
 import MessageUI
 
@@ -139,7 +138,7 @@ public class UIAppUtils {
             return false
         }
     }
-
+    
     
     /// Checks the permission status for accessing media hardware.
     ///
@@ -174,7 +173,10 @@ public class UIAppUtils {
                 
                 DispatchQueue.main.async {
                     
-                    let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Would you like to grant the \(mediaType.rawValue) permission now?\n\nNote: Changing permission will cause your app to refresh.", preferredStyle: .alert)
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied \(mediaType.rawValue) permission. Would you like to grant the \(mediaType.rawValue) permission now?\n\nNote: Changing permission will cause your app to refresh.",
+                        preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
                         goToAppSettings()
                     })
@@ -186,7 +188,10 @@ public class UIAppUtils {
                 
                 DispatchQueue.main.async {
                     
-                    let alert = UIAlertController(title: "Permission Denied", message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue", preferredStyle: .alert)
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue",
+                        preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default))
                     getTopMostViewController()?.present(alert, animated: true, completion: nil)
                 }
@@ -210,7 +215,10 @@ public class UIAppUtils {
                         
                         DispatchQueue.main.async {
                             
-                            let alert = UIAlertController(title: "Permission Denied", message: "Cannot proceed without granting \(mediaType.rawValue) permission", preferredStyle: .alert)
+                            let alert = UIAlertController(
+                                title: "Permission Denied",
+                                message: "Cannot proceed without granting \(mediaType.rawValue) permission",
+                                preferredStyle: .alert)
                             alert.addAction(UIAlertAction(title: "OK", style: .default))
                             getTopMostViewController()?.present(alert, animated: true, completion: nil)
                         }
@@ -226,7 +234,10 @@ public class UIAppUtils {
             
             DispatchQueue.main.async {
                 
-                let alert = UIAlertController(title: "Hardware Access Restricted", message: "Your \(mediaType.rawValue) access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access", preferredStyle: .alert)
+                let alert = UIAlertController(
+                    title: "Hardware Access Restricted",
+                    message: "Your \(mediaType.rawValue) access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access",
+                    preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 getTopMostViewController()?.present(alert, animated: true, completion: nil)
             }
@@ -237,10 +248,13 @@ public class UIAppUtils {
             
             // Handle any future unknown cases
         @unknown default:
-
+            
             DispatchQueue.main.async {
                 
-                let alert = UIAlertController(title: "Unknown Error", message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.", preferredStyle: .alert)
+                let alert = UIAlertController(
+                    title: "Unknown Error",
+                    message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.",
+                    preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 getTopMostViewController()?.present(alert, animated: true, completion: nil)
             }
@@ -273,28 +287,28 @@ public class UIAppUtils {
             SKStoreReviewController.requestReview()
         }
     }
-}
-
-public extension UIAppUtils: NSObject, MFMailComposeViewControllerDelegate {
     
     /**
      Opens the email intent from the specified view controller or the topmost view controller if not provided.
      
      - Parameters:
-        - viewController: The view controller from which to present the mail compose view controller. Defaults to the topmost view controller.
-        - emailAddresses: An array of email addresses to set as recipients.
-        - subject: The subject of the email.
-        - body: The body of the email.
-        - completion: An optional completion handler that is called with the result of the mail composition.
+       - viewController: The view controller from which to present the mail compose view controller. Defaults to the topmost view controller.
+       - externalMailOptions: An enum representing different options for handling mail if the device is not capable of sending emails using MFMailComposeViewController.
+       - emailAddresses: An array of email addresses to set as recipients.
+       - subject: The subject of the email.
+       - body: The body of the email.
+       - completion: An optional completion handler that is called with the result of the mail composition.
      
-    This function attempts to present the system's email composition interface (`MFMailComposeViewController`) from the specified or topmost view controller. If the device is not capable of sending emails, it prompts the user with an alert offering to open the default mail app externally.
+     This function attempts to present the system's email composition interface (`MFMailComposeViewController`) from the specified or topmost view controller. If the device is not capable of sending emails using MFMailComposeViewController, you can specify alternative options using the `externalMailOptions` parameter. If `externalMailOptions` is set to proceed externally and no mail app is found, it prompts the user accordingly.
      
-     - Important: The completion handler will only be called if the email is sent within the app using `MFMailComposeViewController`.
+     - Important: The completion handler will only trigger if the email is sent within the app using `MFMailComposeViewController`.
      */
-    static func openEmailIntent(from viewController: UIViewController? = getTopMostViewController(), with emailAddresses: [String], subject: String?, body: String?, completion: ((_ result: MFMailComposeResult) -> Void)? = nil) {
+
+    public static func openEmailIntent(from viewController: UIViewController? = getTopMostViewController(), externalMailOptions: ZippedUIAppUtils.ExternalMailOptions, with emailAddresses: [String], subject: String?, body: String?, completion: ((_ result: MFMailComposeResult) -> Void)? = nil) {
         
         // Ensure the view controller is not nil.
         guard let viewController else {
+            print("UIAppUtils -> Error: View controller is nil.")
             return
         }
         
@@ -308,7 +322,9 @@ public extension UIAppUtils: NSObject, MFMailComposeViewControllerDelegate {
             let composeVC = MFMailComposeViewController()
             
             // Set the delegate to handle mail compose result callbacks.
-            composeVC.mailComposeDelegate = viewController as? MFMailComposeViewControllerDelegate
+            let mailDelegate = MailComposeDelegateHandler.shared
+            mailDelegate.completionHandler = completion
+            composeVC.mailComposeDelegate = mailDelegate
             
             // Set the recipients, subject, and body of the email.
             composeVC.setToRecipients(emailAddresses)
@@ -316,37 +332,48 @@ public extension UIAppUtils: NSObject, MFMailComposeViewControllerDelegate {
             composeVC.setMessageBody(body ?? "", isHTML: false)
             
             // Present the mail compose view controller.
-            viewController.present(composeVC, animated: true)
+            viewController.present(composeVC, animated: true) {
+                print("UIAppUtils -> Mail compose view controller presented")
+            }
             
         } else {
             
             // Print a message if mail services are not available.
-            print("Mail services are not available")
+            print("UIAppUtils -> Mail services are not available")
             
-            DispatchQueue.main.async {
-                // Create an alert to inform the user that mail services are not available.
-                let alert = UIAlertController(
-                    title: "Mail Services Unavailable",
-                    message: "It seems you've not setup mail services on your device. Would you like to open the mail app externally to send an email?",
-                    preferredStyle: .alert
-                )
+            switch externalMailOptions {
+
+            case .showConfirmationPrompt:
+                DispatchQueue.main.async {
+                    // Create an alert to inform the user that mail services are not available.
+                    let alert = UIAlertController(
+                        title: "Mail Services Unavailable",
+                        message: "It seems you've not setup mail services on your device. Would you like to open the mail app externally to send an email?",
+                        preferredStyle: .alert
+                    )
+                    
+                    // Add a 'Yes' action to the alert to open the default mail app.
+                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+                        sendMailOnExternalApp(viewController: viewController, emailAddresses: emailAddresses, subject: subject ?? "", body: body ?? "")
+                    })
+                    
+                    // Add a 'No' action to the alert.
+                    alert.addAction(UIAlertAction(title: "No", style: .default))
+                    
+                    // Present the alert to the user.
+                    viewController.present(alert, animated: true, completion: nil)
+                }
                 
-                // Add a 'Yes' action to the alert to open the default mail app.
-                alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
-                    sendMailOnExternalApp(viewController: viewController, emailAddresses: emailAddresses, subject: subject ?? "", body: body ?? "")
-                })
+            case .goDirectlyToExternalMail:
+                sendMailOnExternalApp(viewController: viewController, emailAddresses: emailAddresses, subject: subject ?? "", body: body ?? "")
                 
-                // Add a 'No' action to the alert.
-                alert.addAction(UIAlertAction(title: "No", style: .default))
-                
-                // Present the alert to the user.
-                viewController.present(alert, animated: true, completion: nil)
+            case .doNotGoToExternalMail:
+                print("UIAppUtils -> The email cannot be sent because device is not capable of sending emails using MFMailComposeViewController and the option to proceed to external mail is not enabled.")
             }
         }
     }
-
-    // Private static function to send an email using the default mail app if the in-app mail services are not available.
-    // It takes an array of email addresses, subject, and body as parameters.
+    
+    // Private static function to send an email using the external mail app if the in-app mail services are not available.
     private static func sendMailOnExternalApp(viewController: UIViewController, emailAddresses: [String], subject: String, body: String) {
         
         // Create URL components for the mailto scheme.
@@ -378,61 +405,51 @@ public extension UIAppUtils: NSObject, MFMailComposeViewControllerDelegate {
             }
         }
     }
+}
+
+// MARK: - MFMailComposeViewControllerDelegate Methods
+
+// Internal delegate handler class to manage MFMailComposeViewControllerDelegate methods
+class MailComposeDelegateHandler: NSObject, MFMailComposeViewControllerDelegate {
     
-    // MARK: - MFMailComposeViewControllerDelegate Methods
+    static let shared = MailComposeDelegateHandler()
     
-    // Dismisses the mail compose view controller, handles any errors, and call the completion handler with the mail composition result if no error occurs.
-    public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+    var completionHandler: ((_ result: MFMailComposeResult) -> Void)?
+    
+    private override init() {
+        super.init()
+    }
+    
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        
+        print("UIAppUtils -> mailComposeController triggered with result: \(result.rawValue)")
         
         // Dismiss the mail compose view controller.
-        controller.dismiss(animated: true, completion: nil)
-        
-        // Handle any errors during mail composition
-        if let error {
+        controller.dismiss(animated: true) {
             
-            // Show an alert with the error message
-            DispatchQueue.main.async {
-                let alert = UIAlertController(
-                    title: "Mail Compose Error",
-                    message: error.localizedDescription,
-                    preferredStyle: .alert
-                )
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
-            }
-            
-        } else {
-            // Call the completion handler with the mail composition result
-            UIAppUtils.emailCompletion?(result)
-        }
-    }
-}
-
-/// Utility class for logical encapsulation of custom types/utilities within the `UIAppUtils` namespace, ignore this class.
-///
-/// Ignore this class as it is made so that the user doesn't see unnecessary things in autocomplete of Xcode.
-public class ZippedUIAppUtils {
-    
-    /// Enum representing different types of media.
-    public enum MediaType: String {
-        
-        /// Represents access to the microphone.
-        case audio = "Microphone"
-        
-        /// Represents access to the camera.
-        case video = "Camera"
-        
-        /// Converts the media type to the corresponding `AVMediaType`.
-        var avMediaType: AVMediaType {
-            switch self {
-            case .audio:
-                return .audio
-            case .video:
-                return .video
+            // Handle any errors during mail composition
+            if let error {
+                
+                print("UIAppUtils -> Error: \(error.localizedDescription)")
+                
+                // Show an alert with the error message
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(
+                        title: "Mail Compose Error",
+                        message: error.localizedDescription,
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+                
+            } else {
+                // Call the completion handler with the mail composition result
+                self.completionHandler?(result)
             }
         }
     }
 }
-
-
 #endif
