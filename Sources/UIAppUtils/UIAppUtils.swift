@@ -275,7 +275,7 @@ public class UIAppUtils {
     }
 }
 
-extension UIAppUtils: NSObject, MFMailComposeViewControllerDelegate {
+public extension UIAppUtils: NSObject, MFMailComposeViewControllerDelegate {
     
     /**
      Opens the email intent from the specified view controller or the topmost view controller if not provided.
