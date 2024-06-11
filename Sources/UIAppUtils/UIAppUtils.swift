@@ -251,7 +251,6 @@ public class UIAppUtils {
         @unknown default:
             
             DispatchQueue.main.async {
-                
                 let alert = UIAlertController(
                     title: "Unknown Error",
                     message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.",
@@ -369,7 +368,15 @@ public class UIAppUtils {
                 sendMailOnExternalApp(viewController: viewController, emailAddresses: emailAddresses, subject: subject ?? "", body: body ?? "")
                 
             case .doNotGoToExternalMail:
-                print("UIAppUtils -> The email cannot be sent because device is not capable of sending emails using MFMailComposeViewController and the option to proceed to external mail is not enabled.")
+                
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(
+                        title: "Error",
+                        message: "Your device is currently unable to send emails using the default email app. Please configure your email settings or try again later.",
+                        preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    viewController.present(alert, animated: true, completion: nil)
+                }
             }
         }
     }
