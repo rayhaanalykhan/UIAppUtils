@@ -156,7 +156,7 @@ Note: The delegate method is not applicable when sending emails using an externa
     // Alternate
     // You can even ignore the completion entirely.
     UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "")
-    ```
+  ```
 
 ## License
 
