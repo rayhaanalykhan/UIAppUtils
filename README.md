@@ -8,8 +8,10 @@ UIAppUtils is a robust UIKit utility library specializing in app-wide functional
 - Get the topmost view controller in the app's view hierarchy.
 - Take a screenshot of the current key window.
 - Open the Settings app or the app-specific settings.
+- Open a given URL if it can be opened
 - Check media permissions for camera and microphone.
 - Request an app rating from the user.
+- Send an email directly from the app. Redirect to another email app if the default mail app is not configured.
 
 ## Installation
 
@@ -84,8 +86,27 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     UIAppUtils.goToAppSettings() // Open the settings of your app
     ```
+5. **Open a URL:**
+
+    This function allows your app to open various types of URLs, including external URLs (e.g., web links) and custom URL schemes.
+   
+    ```swift 
+    if UIAppUtils.openURL(url: url) {
+        // Do something if url is opened
+    } else {
+        // Do something if url is cannot be opened
+    }
     
-5. **Check Media Permissions:** 
+    ```
+    ```swift
+    // Alternate
+    let url = URL(string: "https://github.com/rayhaanalykhan")!
+        
+    UIAppUtils.openURL(url: url) // we can safely discard the result here.
+
+    ```
+
+6. **Check Media Permissions:** 
 
     Check for camera(video) or microphone(audio) permissions and handle the response.
 
@@ -101,13 +122,35 @@ To use UIAppUtils in your project, you can call its static methods directly:
     }
     ```
 
-6. **Request App Review:** 
+7. **Request App Review:** 
 
     Prompt the user to rate your app. 
 
     ```swift 
     UIAppUtils.requestReview()
     ```
+8. **Send an Email:**
+
+    Enable users to compose and send emails directly from the app. Includes a delegate to report email status (saved, sent, cancelled, etc.). If the device cannot send emails using the default mail app or if it's not configured, provide an option to redirect to an external email app.
+
+    ```swift
+    UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "") { result in
+            
+    switch result {
+        case .cancelled:
+            print("Cancelled")
+        case .saved:
+            print("Saved")
+        case .sent:
+            print("Sent")
+        case .failed:
+            print("Failed")
+        @unknown default:
+            print("Default")
+        }
+    }
+    ```
+Note: The delegate method is not applicable when sending emails using an external mail app.
 
 ## License
 
