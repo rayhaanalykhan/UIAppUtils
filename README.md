@@ -8,10 +8,10 @@ UIAppUtils is a robust UIKit utility library specializing in app-wide functional
 - Get the topmost view controller in the app's view hierarchy.
 - Take a screenshot of the current key window.
 - Open the Settings app or the app-specific settings.
-- Open a given URL if it can be opened
+- Open a given URL.
 - Check media permissions for camera and microphone.
 - Request an app rating from the user.
-- Send an email directly from the app. Redirect to another email app if the default mail app is not configured.
+- Send an email.
 
 ## Installation
 
