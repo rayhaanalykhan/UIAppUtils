@@ -152,6 +152,12 @@ To use UIAppUtils in your project, you can call its static methods directly:
     ```
 Note: The delegate method is not applicable when sending emails using an external mail app.
 
+    ```swift
+    // Alternate
+    // You can even ignore the completion entirely.
+    UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "")
+    ```
+
 ## License
 
 UIAppUtils is released under the MIT License. See the [LICENSE](https://github.com/rayhaanalykhan/UIAppUtils/blob/main/LICENSE.md) file for further details.
