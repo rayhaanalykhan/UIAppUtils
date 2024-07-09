@@ -11,12 +11,15 @@ import UIKit
 import StoreKit
 import AVFoundation
 import MessageUI
+import CoreLocation
 
 public class UIAppUtils {
     
     private init() { }
     
     private static var emailCompletion: ((_ result: MFMailComposeResult) -> Void)?
+    
+    private static var locationCompletion: ((_ granted: Bool) -> Void)?
     
     /// Returns the current version number of the app, or a default message if not found.
     static var appVersion: String {
@@ -423,6 +426,109 @@ public class UIAppUtils {
             }
         }
     }
+    
+    public static func checkLocationPermission(from viewController: UIViewController? = UIAppUtils.getTopMostViewController(), permission: @escaping(_ granted: Bool) -> Void) {
+        
+        guard let viewController else {
+            print("UIAppUtils -> Error: View controller is nil.")
+            return
+        }
+        
+        // Store the completion handler to be used later.
+//        locationCompletion = permission
+        
+//        let locationManager = CLLocationManager()
+//        
+//        // Set the delegate to handle mail compose result callbacks.
+        LocationPermissionDelegateHandler.shared.completionHandler = permission
+//        locationManager.delegate = locationDelegate
+        
+//        DispatchQueue.main.async {
+//            locationManager.requestWhenInUseAuthorization()
+//        }
+    }
+}
+
+// MARK: - MFMailComposeViewControllerDelegate Methods
+
+// Internal delegate handler class to manage MFMailComposeViewControllerDelegate methods
+class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
+    
+    static let shared = LocationPermissionDelegateHandler()
+    
+    var completionHandler: ((_ granted: Bool) -> Void)?
+    
+    let locationManager = CLLocationManager()
+    
+    private override init() {
+        super.init()
+        
+        
+        
+        
+        
+        DispatchQueue.main.async { [self] in
+            locationManager.requestWhenInUseAuthorization()
+            
+            locationManager.delegate = self
+        }
+    }
+    
+    @available(iOS 14.0, *)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        handleAuthorizationChange(status: manager.authorizationStatus)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        handleAuthorizationChange(status: status)
+    }
+    
+    func handleAuthorizationChange(status: CLAuthorizationStatus) {
+        
+        switch status {
+            
+        case .authorizedAlways, .authorizedWhenInUse:
+            // Permission granted
+            completionHandler?(true)
+            
+        case .denied:
+            // Permission denied
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Location Permission Denied",
+                    message: "You denied location permission. Please go to settings and grant location permission to continue",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            completionHandler?(true)
+            
+        case .notDetermined, .restricted:
+            // Do nothing here, continue to handle in original function
+            break
+            
+        @unknown default:
+            // Handle any future unknown cases
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Unknown Error",
+                    message: "An unknown error occurred while checking location permissions. Please try again later or contact support for assistance.",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            completionHandler?(false)
+        }
+        
+    }
 }
 
 // MARK: - MFMailComposeViewControllerDelegate Methods
@@ -463,4 +569,6 @@ class MailComposeDelegateHandler: NSObject, MFMailComposeViewControllerDelegate 
         }
     }
 }
+
+
 #endif
