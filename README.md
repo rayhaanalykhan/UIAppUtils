@@ -91,6 +91,8 @@ To use UIAppUtils in your project, you can call its static methods directly:
     This function allows your app to open various types of URLs, including external URLs (e.g., web links) and custom URL schemes.
    
     ```swift 
+    let url = URL(string: "https://github.com/rayhaanalykhan")!
+
     if UIAppUtils.openURL(url: url) {
         // Do something if url is opened
     } else {
