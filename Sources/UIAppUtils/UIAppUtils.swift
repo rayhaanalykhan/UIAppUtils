@@ -17,10 +17,6 @@ public class UIAppUtils {
     
     private init() { }
     
-    private static var emailCompletion: ((_ result: MFMailComposeResult) -> Void)?
-    
-    private static var locationCompletion: ((_ granted: Bool) -> Void)?
-    
     /// Returns the current version number of the app, or a default message if not found.
     static var appVersion: String {
         return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Version not available"
@@ -194,7 +190,7 @@ public class UIAppUtils {
                     
                     let alert = UIAlertController(
                         title: "Permission Denied",
-                        message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue",
+                        message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue\n\nNote: Changing permission will cause your app to refresh.",
                         preferredStyle: .alert
                     )
                     
@@ -276,7 +272,7 @@ public class UIAppUtils {
             break
         }
     }
-
+    
     
     /// Shows the app rating prompt to the user.
     ///
@@ -305,19 +301,19 @@ public class UIAppUtils {
      Opens the email intent from the specified view controller or the topmost view controller if not provided.
      
      - Parameters:
-        - viewController: The view controller from which to present the mail compose view controller. Defaults to the topmost view controller.
-        - externalMailOptions: An enum representing different options for handling mail if the device is not capable of sending emails using MFMailComposeViewController.
-        - emailAddresses: An array of email addresses to set as recipients.
-        - subject: The subject of the email.
-        - body: The body of the email.
-        - completion: An optional completion handler that is called with the result of the mail composition.
+     - viewController: The view controller from which to present the mail compose view controller. Defaults to the topmost view controller.
+     - externalMailOptions: An enum representing different options for handling mail if the device is not capable of sending emails using MFMailComposeViewController.
+     - emailAddresses: An array of email addresses to set as recipients.
+     - subject: The subject of the email.
+     - body: The body of the email.
+     - completion: An optional completion handler that is called with the result of the mail composition.
      
      The switch statement handles different outcomes of the mail composition:
-        - `cancelled`: Mail cancelled
-        - `saved`: Mail saved
-        - `sent`: Mail sent
-        - `failed`: Mail failed
-        - `unknown`: Unknown mail compose result
+     - `cancelled`: Mail cancelled
+     - `saved`: Mail saved
+     - `sent`: Mail sent
+     - `failed`: Mail failed
+     - `unknown`: Unknown mail compose result
      
      This function attempts to present the system's email composition interface (`MFMailComposeViewController`) from the specified or topmost view controller. If the device is not capable of sending emails using MFMailComposeViewController, you can specify alternative options using the `externalMailOptions` parameter. If `externalMailOptions` is set to proceed externally and no mail app is found, it prompts the user accordingly.
      
@@ -332,9 +328,6 @@ public class UIAppUtils {
         
         // Check if the device is capable of sending emails using MFMailComposeViewController.
         if MFMailComposeViewController.canSendMail() {
-            
-            // Store the completion handler to be used later.
-            emailCompletion = completion
             
             let composeVC = MFMailComposeViewController()
             
@@ -434,100 +427,8 @@ public class UIAppUtils {
             return
         }
         
-        // Store the completion handler to be used later.
-//        locationCompletion = permission
-        
-//        let locationManager = CLLocationManager()
-//        
-//        // Set the delegate to handle mail compose result callbacks.
-        LocationPermissionDelegateHandler.shared.completionHandler = permission
-//        locationManager.delegate = locationDelegate
-        
-//        DispatchQueue.main.async {
-//            locationManager.requestWhenInUseAuthorization()
-//        }
-    }
-}
-
-// MARK: - MFMailComposeViewControllerDelegate Methods
-
-// Internal delegate handler class to manage MFMailComposeViewControllerDelegate methods
-class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
-    
-    static let shared = LocationPermissionDelegateHandler()
-    
-    var completionHandler: ((_ granted: Bool) -> Void)?
-    
-    let locationManager = CLLocationManager()
-    
-    private override init() {
-        super.init()
-        
-        
-        
-        
-        
-        DispatchQueue.main.async { [self] in
-            locationManager.requestWhenInUseAuthorization()
-            
-            locationManager.delegate = self
-        }
-    }
-    
-    @available(iOS 14.0, *)
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        handleAuthorizationChange(status: manager.authorizationStatus)
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        handleAuthorizationChange(status: status)
-    }
-    
-    func handleAuthorizationChange(status: CLAuthorizationStatus) {
-        
-        switch status {
-            
-        case .authorizedAlways, .authorizedWhenInUse:
-            // Permission granted
-            completionHandler?(true)
-            
-        case .denied:
-            // Permission denied
-            DispatchQueue.main.async {
-                
-                let alert = UIAlertController(
-                    title: "Location Permission Denied",
-                    message: "You denied location permission. Please go to settings and grant location permission to continue",
-                    preferredStyle: .alert
-                )
-                
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                
-                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
-            }
-            completionHandler?(true)
-            
-        case .notDetermined, .restricted:
-            // Do nothing here, continue to handle in original function
-            break
-            
-        @unknown default:
-            // Handle any future unknown cases
-            DispatchQueue.main.async {
-                
-                let alert = UIAlertController(
-                    title: "Unknown Error",
-                    message: "An unknown error occurred while checking location permissions. Please try again later or contact support for assistance.",
-                    preferredStyle: .alert
-                )
-                
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                
-                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
-            }
-            completionHandler?(false)
-        }
-        
+        // Set the delegate to handle location dialog callbacks.
+        LocationPermissionDelegateHandler.shared.permission = permission
     }
 }
 
@@ -570,5 +471,122 @@ class MailComposeDelegateHandler: NSObject, MFMailComposeViewControllerDelegate 
     }
 }
 
+// MARK: - CLLocationManagerDelegate Methods
 
+// Internal delegate handler class to manage CLLocationManagerDelegate methods
+class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
+    
+    static let shared = LocationPermissionDelegateHandler()
+    
+    var permission: ((_ granted: Bool) -> Void)?
+    
+    let locationManager = CLLocationManager()
+    
+    private override init() {
+        super.init()
+        
+        locationManager.delegate = self
+        
+        DispatchQueue.main.async {
+            self.locationManager.requestWhenInUseAuthorization()
+        }
+    }
+    
+    @available(iOS 14.0, *)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        handleAuthorizationChange(status: manager.authorizationStatus)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        handleAuthorizationChange(status: status)
+    }
+    
+    func handleAuthorizationChange(status: CLAuthorizationStatus) {
+        
+        switch status {
+            
+        case .authorizedAlways, .authorizedWhenInUse:
+
+            permission?(true)
+            
+        case .denied:
+
+            if 1==1 {
+                
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied location permission. Would you like to grant the location permission now?",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+                        UIAppUtils.goToAppSettings()
+                    })
+                    alert.addAction(UIAlertAction(title: "No", style: .default))
+                    
+                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+                
+            } else {
+                
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied location permission. Please go to settings and grant the location permission to continue",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    
+                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+            }
+            permission?(false)
+            
+            break
+            
+        case .notDetermined:
+            // Do nothing here, wait for use to select an option
+            break
+            
+        case .restricted:
+            
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Location Access Restricted",
+                    message: "Your location access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            permission?(false)
+            
+            break
+            
+            // Handle any future unknown cases
+        @unknown default:
+
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Unknown Error",
+                    message: "An unknown error occurred while checking location permissions. Please try again later or contact support for assistance.",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            permission?(false)
+        }
+    }
+}
 #endif
