@@ -329,11 +329,11 @@ public class UIAppUtils {
         // Check if the device is capable of sending emails using MFMailComposeViewController.
         if MFMailComposeViewController.canSendMail() {
             
-            let composeVC = MFMailComposeViewController()
-            
             // Set the delegate to handle mail compose result callbacks.
             let mailDelegate = MailComposeDelegateHandler.shared
             mailDelegate.completionHandler = completion
+            
+            let composeVC = MFMailComposeViewController()
             composeVC.mailComposeDelegate = mailDelegate
             
             composeVC.setToRecipients(emailAddresses)
@@ -420,15 +420,105 @@ public class UIAppUtils {
         }
     }
     
-    public static func checkLocationPermission(from viewController: UIViewController? = UIAppUtils.getTopMostViewController(), permission: @escaping(_ granted: Bool) -> Void) {
+    public static func checkLocationPermission(from viewController: UIViewController? = UIAppUtils.getTopMostViewController(), showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
         
         guard let viewController else {
             print("UIAppUtils -> Error: View controller is nil.")
             return
         }
         
-        // Set the delegate to handle location dialog callbacks.
-        LocationPermissionDelegateHandler.shared.permission = permission
+        let authorizationStatus = CLLocationManager.authorizationStatus()
+        
+        switch authorizationStatus {
+            
+        case .authorizedAlways, .authorizedWhenInUse:
+            permission(true)
+            
+        case .denied:
+            
+            if showGoToAppSettingsOption {
+                
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied location permission. Would you like to grant the location permission now?",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+                        UIAppUtils.goToAppSettings()
+                    })
+                    alert.addAction(UIAlertAction(title: "No", style: .default))
+                    
+                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+                
+            } else {
+                
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied location permission. Please go to settings and grant the location permission to continue",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    
+                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+            }
+            
+            permission(false)
+            
+        case .notDetermined:
+            
+            // Set the delegate to handle location dialog callbacks.
+            let locationDelegate = LocationPermissionDelegateHandler.shared
+            locationDelegate.permission = permission
+
+            locationDelegate.locationManager.delegate = locationDelegate
+            
+            DispatchQueue.main.async {
+                locationDelegate.locationManager.requestWhenInUseAuthorization()
+            }
+            
+        case .restricted:
+            
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Location Access Restricted",
+                    message: "Your location access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            
+            permission(false)
+            
+            // Handle any future unknown cases
+        @unknown default:
+            
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Unknown Error",
+                    message: "An unknown error occurred while checking location permissions. Please try again later or contact support for assistance.",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            
+            permission(false)
+        }
     }
 }
 
@@ -484,12 +574,6 @@ class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
     
     private override init() {
         super.init()
-        
-        locationManager.delegate = self
-        
-        DispatchQueue.main.async {
-            self.locationManager.requestWhenInUseAuthorization()
-        }
     }
     
     @available(iOS 14.0, *)
@@ -506,45 +590,16 @@ class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
         switch status {
             
         case .authorizedAlways, .authorizedWhenInUse:
-
+            
             permission?(true)
             
+            cleanupLocationManager()
+            
         case .denied:
-
-            if 1==1 {
-                
-                DispatchQueue.main.async {
-                    
-                    let alert = UIAlertController(
-                        title: "Permission Denied",
-                        message: "You previously denied location permission. Would you like to grant the location permission now?",
-                        preferredStyle: .alert
-                    )
-                    
-                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
-                        UIAppUtils.goToAppSettings()
-                    })
-                    alert.addAction(UIAlertAction(title: "No", style: .default))
-                    
-                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
-                }
-                
-            } else {
-                
-                DispatchQueue.main.async {
-                    
-                    let alert = UIAlertController(
-                        title: "Permission Denied",
-                        message: "You previously denied location permission. Please go to settings and grant the location permission to continue",
-                        preferredStyle: .alert
-                    )
-                    
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    
-                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
-                }
-            }
+            
             permission?(false)
+            
+            cleanupLocationManager()
             
             break
             
@@ -554,39 +609,24 @@ class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
             
         case .restricted:
             
-            DispatchQueue.main.async {
-                
-                let alert = UIAlertController(
-                    title: "Location Access Restricted",
-                    message: "Your location access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access",
-                    preferredStyle: .alert
-                )
-                
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                
-                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
-            }
             permission?(false)
+            
+            cleanupLocationManager()
             
             break
             
             // Handle any future unknown cases
         @unknown default:
-
-            DispatchQueue.main.async {
-                
-                let alert = UIAlertController(
-                    title: "Unknown Error",
-                    message: "An unknown error occurred while checking location permissions. Please try again later or contact support for assistance.",
-                    preferredStyle: .alert
-                )
-                
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                
-                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
-            }
+            
             permission?(false)
+            
+            cleanupLocationManager()
         }
+    }
+    
+    func cleanupLocationManager() {
+        locationManager.delegate = nil
+        permission = nil
     }
 }
 #endif
