@@ -119,7 +119,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
     ```
 7. **Send an Email:**
 
-    Enable users to compose and send emails directly from the app. Includes a delegate to report email status (saved, sent, cancelled, etc.). If the device cannot send emails using the default mail app or if it's not configured, provide an option to redirect to an external email app, user can specify this using 'externalMailOptions' parameter.
+    Enable users to compose and send emails directly from the app. Includes a delegate to report email status (saved, sent, cancelled, etc.). If the device cannot send emails using the default mail app or if it's not configured, provide an option to redirect to an external email app. For more details, see the [ExternalMailOptions](#external-mail-options) section.
 
     ```swift
     UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "") { result in
@@ -162,7 +162,9 @@ To use UIAppUtils in your project, you can call its static methods directly:
     }
     ```
 
-> **ExternalMailOptions:** The `ExternalMailOptions` enum provides options for managing email scenarios:
+For more details, see the [ExternalMailOptions](#external-mail-options) section.
+
+> **ExternalMailOptions:** The `ExternalMailOptions` enum provides options for managing email scenarios: {#external-mail-options}
 >
 > - *showConfirmationPrompt*: Prompts for confirmation before accessing an external email app.
 > - *goDirectlyToExternalMail*: Redirects to an external email app without confirmation.
