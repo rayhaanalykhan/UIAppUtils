@@ -146,14 +146,6 @@ To use UIAppUtils in your project, you can call its static methods directly:
     UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "")
     ```
 
-### ExternalMailOptions
-
-The `ExternalMailOptions` enum provides different options for handling email scenarios:
-
-- **showConfirmationPrompt**: Displays a confirmation prompt before accessing an external email app.
-- **goDirectlyToExternalMail**: Redirects the user directly to an external email app without any confirmation.
-- **doNotGoToExternalMail**: Does not redirect to an external email app.
-
 8. **Check Media Permissions:** 
 
     Check for camera(video) or microphone(audio) permissions and handle the response.
@@ -169,6 +161,14 @@ The `ExternalMailOptions` enum provides different options for handling email sce
         } 
     }
     ```
+
+> **ExternalMailOptions:** The `ExternalMailOptions` enum provides options for managing email scenarios:
+>
+> - *showConfirmationPrompt*: Prompts for confirmation before accessing an external email app.
+> - *goDirectlyToExternalMail*: Redirects to an external email app without confirmation.
+> - *doNotGoToExternalMail*: Does not redirect to an external email app.
+>
+> Use these options to enhance user experience based on your app's needs.
 
 ## License
 
