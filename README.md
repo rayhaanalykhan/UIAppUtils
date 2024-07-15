@@ -162,9 +162,9 @@ To use UIAppUtils in your project, you can call its static methods directly:
     }
     ```
 
-For more details, see the [ExternalMailOptions](#external-mail-options) section.
-
-> **ExternalMailOptions:** The `ExternalMailOptions` enum provides options for managing email scenarios: {#external-mail-options}
+> ### ExternalMailOptions {#external-mail-options}
+>
+> The `ExternalMailOptions` enum provides options for managing email scenarios:
 >
 > - *showConfirmationPrompt*: Prompts for confirmation before accessing an external email app.
 > - *goDirectlyToExternalMail*: Redirects to an external email app without confirmation.
