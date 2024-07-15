@@ -153,7 +153,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
     The function handles all authorization statuses for all cases (authorized, not determine, first-time denied, previously denied, restricted, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the [PreviouslyDeniedOption](#previouslydeniedoption) enum.
 
     ```swift 
-    UIAppUtils.checkMediaPermission(mediaType: .video, previouslyDeniedOption: .showGoToSettingsOption) { granted in // show an option to navigate to app settings for if permission has been previously denied.
+    UIAppUtils.checkMediaPermission(mediaType: .video, previouslyDeniedOption: .showGoToSettingsOption) { granted in
         if granted { 
             print("Camera access granted.") 
         } else { 
@@ -168,7 +168,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
     The function handles all authorization statuses for all cases (authorized, not determine, first-time denied, perviously denied, provisional, ephemeral, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the [PreviouslyDeniedOption](#previouslydeniedoption) enum.
 
     ```swift 
-    UIAppUtils.checkNotificationPermission(previouslyDeniedOption: .showAlert) { granted in // show an option to navigate to app settings for if permission has been previously denied.
+    UIAppUtils.checkNotificationPermission(previouslyDeniedOption: .showAlert) { granted in
         if granted { 
             print("Notification access granted.") 
         } else { 
@@ -183,7 +183,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
     The function handles all authorization statuses for all cases (authorizedAlways, authorizedWhenInUse, notDetermined, firstTimeDenied, previouslyDenied, restricted, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the [PreviouslyDeniedOption](#previouslydeniedoption) enum.
 
     ```swift 
-    UIAppUtils.checkLocationPermission(previouslyDeniedOption: .doNothing) { granted in // show an option to navigate to app settings for if permission has been previously denied.
+    UIAppUtils.checkLocationPermission(previouslyDeniedOption: .doNothing) { granted in
         if granted { 
             print("Location access granted.") 
         } else { 
