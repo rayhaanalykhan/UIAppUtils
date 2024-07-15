@@ -9,9 +9,11 @@ UIAppUtils is a robust UIKit utility library specializing in app-wide functional
 - Take a screenshot of the current key window.
 - Open the Settings app or the app-specific settings.
 - Open a given URL.
-- Check media permissions for camera and microphone.
 - Request an app rating from the user.
 - Send an email.
+- Check media permissions for camera and microphone.
+- Check permission for notifications.
+- Check permission for location.
 
 ## Installation
 
@@ -108,32 +110,16 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     ```
 
-6. **Check Media Permissions:** 
-
-    Check for camera(video) or microphone(audio) permissions and handle the response.
-
-    The function handles all authorization statuses and shows appropriate alert messages for all cases (not determine, first-time denied, previously denied, restricted, and unknown).
-
-    ```swift 
-    UIAppUtils.checkMediaPermission(mediaType: .video, showGoToAppSettingsOption: true) { granted in // show an option to navigate to app settings for if permission has been previously denied.
-        if granted { 
-            print("Camera access granted.") 
-        } else { 
-            print("Camera access denied.") 
-        } 
-    }
-    ```
-
-7. **Request App Review:** 
+6. **Request App Review:** 
 
     Prompt the user to rate your app. 
 
     ```swift 
     UIAppUtils.requestReview()
     ```
-8. **Send an Email:**
+7. **Send an Email:**
 
-    Enable users to compose and send emails directly from the app. Includes a delegate to report email status (saved, sent, cancelled, etc.). If the device cannot send emails using the default mail app or if it's not configured, provide an option to redirect to an external email app.
+    Enable users to compose and send emails directly from the app. Includes a delegate to report email status (saved, sent, cancelled, etc.). If the device cannot send emails using the default mail app or if it's not configured, provide an option to redirect to an external email app, user can specify this using 'externalMailOptions' parameter.
 
     ```swift
     UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "") { result in
@@ -158,6 +144,30 @@ To use UIAppUtils in your project, you can call its static methods directly:
     // Alternate
     // You can even ignore the completion entirely.
     UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "")
+    ```
+
+### ExternalMailOptions
+
+The `ExternalMailOptions` enum provides different options for handling email scenarios:
+
+- **showConfirmationPrompt**: Displays a confirmation prompt before accessing an external email app.
+- **goDirectlyToExternalMail**: Redirects the user directly to an external email app without any confirmation.
+- **doNotGoToExternalMail**: Does not redirect to an external email app.
+
+8. **Check Media Permissions:** 
+
+    Check for camera(video) or microphone(audio) permissions and handle the response.
+
+    The function handles all authorization statuses and shows appropriate alert messages for all cases (not determine, first-time denied, previously denied, restricted, and unknown).
+
+    ```swift 
+    UIAppUtils.checkMediaPermission(mediaType: .video, showGoToAppSettingsOption: true) { granted in // show an option to navigate to app settings for if permission has been previously denied.
+        if granted { 
+            print("Camera access granted.") 
+        } else { 
+            print("Camera access denied.") 
+        } 
+    }
     ```
 
 ## License
