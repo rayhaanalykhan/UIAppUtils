@@ -119,7 +119,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
     ```
 7. **Send an Email:**
 
-    Enable users to compose and send emails directly from the app. Includes a delegate to report email status (saved, sent, cancelled, etc.). If the device cannot send emails using the default mail app or if it's not configured, provide an option to redirect to an external email app. For more details, see the [ExternalMailOptions](#externalmailoptions) section.
+    Enable users to compose and send emails directly from the app. Includes a delegate to report email status (saved, sent, cancelled, etc.). If the device cannot send emails using the default mail app or if it's not configured, provide an option to redirect to an external email app. For more details, see the [ExternalMailOptions](#externalmailoption) section.
 
     ```swift
     UIAppUtils.openEmailIntent(externalMailOption: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "") { result in
@@ -150,7 +150,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     Check for camera(video) or microphone(audio) permissions and handle the response.
 
-    The function handles all authorization statuses for all cases (authorized, not determine, first-time denied, previously denied, restricted, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the previouslyDeniedOption parameter. For more details, refer to the [PreviouslyDeniedOption](#previouslydeniedoptions) section.
+    The function handles all authorization statuses for all cases (authorized, not determine, first-time denied, previously denied, restricted, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the [PreviouslyDeniedOption](#previouslydeniedoption) enum.
 
     ```swift 
     UIAppUtils.checkMediaPermission(mediaType: .video, previouslyDeniedOption: .showGoToSettingsOption) { granted in // show an option to navigate to app settings for if permission has been previously denied.
@@ -165,7 +165,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     Check for notification permission and handle the response.
 
-    The function handles all authorization statuses for all cases (authorized, not determine, first-time denied, perviously denied, provisional, ephemeral, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the previouslyDeniedOption parameter. For more details, refer to the [PreviouslyDeniedOption](#previouslydeniedoption) section.
+    The function handles all authorization statuses for all cases (authorized, not determine, first-time denied, perviously denied, provisional, ephemeral, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the [PreviouslyDeniedOption](#previouslydeniedoption) enum.
 
     ```swift 
     UIAppUtils.checkNotificationPermission(previouslyDeniedOption: .showAlert) { granted in // show an option to navigate to app settings for if permission has been previously denied.
@@ -180,7 +180,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     Check for location permission and handle the response.
 
-    The function handles all authorization statuses for all cases (authorizedAlways, authorizedWhenInUse, notDetermined, firstTimeDenied, previouslyDenied, restricted, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the previouslyDeniedOption parameter. For more details, refer to the [PreviouslyDeniedOption](#previouslydeniedoption) section.
+    The function handles all authorization statuses for all cases (authorizedAlways, authorizedWhenInUse, notDetermined, firstTimeDenied, previouslyDenied, restricted, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the [PreviouslyDeniedOption](#previouslydeniedoption) enum.
 
     ```swift 
     UIAppUtils.checkLocationPermission(previouslyDeniedOption: .doNothing) { granted in // show an option to navigate to app settings for if permission has been previously denied.
