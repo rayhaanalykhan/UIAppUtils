@@ -47,4 +47,17 @@ public class ZippedUIAppUtils {
         /// Do not go to external mail.
         case doNotGoToExternalMail
     }
+    
+    /// Enum representing different options for handling previously denied permissions.
+    public enum PreviouslyDeniedOption: String {
+        
+        /// Show an alert to the user.
+        case showAlert
+        
+        /// Show an option to navigate to app settings.
+        case showGoToSettingsOption
+        
+        /// Do nothing and continue without any prompt.
+        case doNothing
+    }
 }

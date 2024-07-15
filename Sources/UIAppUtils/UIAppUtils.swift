@@ -141,134 +141,6 @@ public class UIAppUtils {
         }
     }
     
-    /// Checks the permission status for accessing media hardware.
-    ///
-    /// This function handles all authorization statuses, including authorized, denied, not determined,
-    /// restricted, and unknown. If permission is denied or restricted, appropriate alert messages are displayed
-    /// to the user. If the authorization status is not determined, the user is prompted for permission.
-    ///
-    /// - Parameters:
-    ///   - mediaType: The type of media hardware to check permission for, such as video or audio.
-    ///   - showGoToAppSettingsOption: A boolean value indicating whether to show an option to navigate to app settings
-    ///                             for granting permission if permission has been previously denied.
-    ///   - permission: A closure to be called with the result of the permission check, returning true if permission
-    ///                 was granted and false otherwise.
-    ///
-    public static func checkMediaPermission(mediaType: ZippedUIAppUtils.MediaType, showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
-        
-        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: mediaType.avMediaType)
-        
-        switch authorizationStatus {
-            
-        case .authorized:
-            
-            permission(true)
-            
-        case .denied:
-            
-            if showGoToAppSettingsOption {
-                
-                DispatchQueue.main.async {
-                    
-                    let alert = UIAlertController(
-                        title: "Permission Denied",
-                        message: "You previously denied \(mediaType.rawValue) permission. Would you like to grant the \(mediaType.rawValue) permission now?\n\nNote: Changing permission will cause your app to refresh.",
-                        preferredStyle: .alert
-                    )
-                    
-                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
-                        goToAppSettings()
-                    })
-                    alert.addAction(UIAlertAction(title: "No", style: .default))
-                    
-                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
-                }
-                
-            } else {
-                
-                DispatchQueue.main.async {
-                    
-                    let alert = UIAlertController(
-                        title: "Permission Denied",
-                        message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue\n\nNote: Changing permission will cause your app to refresh.",
-                        preferredStyle: .alert
-                    )
-                    
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    
-                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
-                }
-            }
-            
-            permission(false)
-            
-        case .notDetermined:
-            
-            DispatchQueue.main.async {
-                
-                AVCaptureDevice.requestAccess(for: mediaType.avMediaType) { granted in
-                    
-                    if granted {
-                        
-                        permission(true)
-                        
-                    } else {
-                        
-                        DispatchQueue.main.async {
-                            
-                            let alert = UIAlertController(
-                                title: "Permission Denied",
-                                message: "Cannot proceed without granting \(mediaType.rawValue) permission",
-                                preferredStyle: .alert
-                            )
-                            
-                            alert.addAction(UIAlertAction(title: "OK", style: .default))
-                            
-                            getTopMostViewController()?.present(alert, animated: true, completion: nil)
-                        }
-                        
-                        permission(false)
-                    }
-                }
-            }
-            
-        case .restricted:
-            
-            DispatchQueue.main.async {
-                
-                let alert = UIAlertController(
-                    title: "Hardware Access Restricted",
-                    message: "Your \(mediaType.rawValue) access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access",
-                    preferredStyle: .alert
-                )
-                
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                
-                getTopMostViewController()?.present(alert, animated: true, completion: nil)
-            }
-            permission(false)
-            
-            // Handle any future unknown cases
-        @unknown default:
-            
-            DispatchQueue.main.async {
-                
-                let alert = UIAlertController(
-                    title: "Unknown Error",
-                    message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.",
-                    preferredStyle: .alert
-                )
-                
-                alert.addAction(UIAlertAction(title: "OK", style: .default))
-                
-                getTopMostViewController()?.present(alert, animated: true, completion: nil)
-            }
-            
-            permission(false)
-        }
-    }
-    
-    
     /// Shows the app rating prompt to the user.
     ///
     /// - Note: This method should be called from the main thread and it may not always display the prompt immediately.
@@ -415,6 +287,245 @@ public class UIAppUtils {
         }
     }
     
+    /// Checks the permission status for accessing media hardware.
+    ///
+    /// This function handles all authorization statuses, including authorized, denied, not determined,
+    /// restricted, and unknown. If permission is denied or restricted, appropriate alert messages are displayed
+    /// to the user. If the authorization status is not determined, the user is prompted for permission.
+    ///
+    /// - Parameters:
+    ///   - mediaType: The type of media hardware to check permission for, such as video or audio.
+    ///   - showGoToAppSettingsOption: A boolean value indicating whether to show an option to navigate to app settings
+    ///                             for granting permission if permission has been previously denied.
+    ///   - permission: A closure to be called with the result of the permission check, returning true if permission
+    ///                 was granted and false otherwise.
+    ///
+    public static func checkMediaPermission(mediaType: ZippedUIAppUtils.MediaType, previouslyDeniedOption: ZippedUIAppUtils.PreviouslyDeniedOption, permission: @escaping(_ granted: Bool) -> Void) {
+        
+        let authorizationStatus = AVCaptureDevice.authorizationStatus(for: mediaType.avMediaType)
+        
+        switch authorizationStatus {
+            
+        case .authorized:
+            
+            permission(true)
+            
+        case .denied:
+            
+            switch previouslyDeniedOption {
+                
+            case .showAlert:
+                
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied \(mediaType.rawValue) permission. Please go to settings and grant the \(mediaType.rawValue) permission to continue\n\nNote: Changing permission will cause your app to refresh.",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    
+                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+                
+            case .showGoToSettingsOption:
+                
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied \(mediaType.rawValue) permission. Would you like to grant the \(mediaType.rawValue) permission now?\n\nNote: Changing permission will cause your app to refresh.",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+                        goToAppSettings()
+                    })
+                    alert.addAction(UIAlertAction(title: "No", style: .default))
+                    
+                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+                
+            case .doNothing:
+                break
+            }
+            
+            permission(false)
+            
+        case .notDetermined:
+            
+            DispatchQueue.main.async {
+                
+                AVCaptureDevice.requestAccess(for: mediaType.avMediaType) { granted in
+                    
+                    if granted {
+                        
+                        permission(true)
+                        
+                    } else {
+                        
+                        DispatchQueue.main.async {
+                            
+                            let alert = UIAlertController(
+                                title: "Permission Denied",
+                                message: "Cannot proceed without granting \(mediaType.rawValue) permission",
+                                preferredStyle: .alert
+                            )
+                            
+                            alert.addAction(UIAlertAction(title: "OK", style: .default))
+                            
+                            getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                        }
+                        
+                        permission(false)
+                    }
+                }
+            }
+            
+        case .restricted:
+            
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Hardware Access Restricted",
+                    message: "Your \(mediaType.rawValue) access is restricted. Please contact your device administrator or adjust your settings to grant the necessary access",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            permission(false)
+            
+            // Handle any future unknown cases
+        @unknown default:
+            
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Unknown Error",
+                    message: "An unknown error occurred while checking \(mediaType.rawValue) permissions. Please try again later or contact support for assistance.",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            
+            permission(false)
+        }
+    }
+    
+    /// Checks the permission status for accessing notification services.
+    ///
+    /// This function handles all authorization statuses, including authorized, denied, not determined,
+    /// provisional, ephemeral, and unknown. If permission is denied or restricted, appropriate alert messages are displayed
+    /// to the user. If the authorization status is not determined, the user is prompted for permission.
+    ///
+    /// - Parameters:
+    ///   - showGoToAppSettingsOption: A boolean value indicating whether to show an option to navigate to app settings
+    ///                                 for granting permission if permission has been previously denied.
+    ///   - permission: A closure to be called with the result of the permission check, returning true if permission
+    ///                 was granted and false otherwise.
+    ///
+    public static func checkNotificationPermission(previouslyDeniedOption: ZippedUIAppUtils.PreviouslyDeniedOption, permission: @escaping (_ granted: Bool) -> Void) {
+        
+        let authorizationStatus = UNUserNotificationCenter.current().getNotificationSettings { settings in
+            
+            switch settings.authorizationStatus {
+            
+            case .authorized:
+                
+                permission(true)
+            
+            case .denied:
+                
+                switch previouslyDeniedOption {
+                    
+                case .showAlert:
+                    
+                    DispatchQueue.main.async {
+                        let alert = UIAlertController(
+                            title: "Permission Denied",
+                            message: "You previously denied notification permission. Please go to settings and grant the notification permission to continue",
+                            preferredStyle: .alert
+                        )
+                        
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        
+                        getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                    }
+                    
+                case .showGoToSettingsOption:
+                    
+                    DispatchQueue.main.async {
+                        
+                        let alert = UIAlertController(
+                            title: "Permission Denied",
+                            message: "You previously denied notification permission. Would you like to grant the notification permission now?",
+                            preferredStyle: .alert
+                        )
+                        
+                        alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+                            goToAppSettings()
+                        })
+                        alert.addAction(UIAlertAction(title: "No", style: .default))
+                        
+                        getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                    }
+                    
+                case .doNothing:
+                    break
+                }
+
+                permission(false)
+
+            case .notDetermined:
+                
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                    DispatchQueue.main.async {
+                        if granted {
+                            permission(true)
+                        } else {
+                            let alert = UIAlertController(
+                                title: "Permission Denied",
+                                message: "Cannot proceed without granting notification permission",
+                                preferredStyle: .alert
+                            )
+                            
+                            alert.addAction(UIAlertAction(title: "OK", style: .default))
+                            getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                            permission(false)
+                        }
+                    }
+                }
+
+            case .provisional:
+                permission(true) // Provisional authorization means the app can display notifications without user approval initially.
+
+            case .ephemeral:
+                permission(false) // Ephemeral notifications are only temporary and do not persist.
+
+            @unknown default:
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(
+                        title: "Unknown Error",
+                        message: "An unknown error occurred while checking notification permissions. Please try again later or contact support for assistance.",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+                permission(false)
+            }
+        }
+    }
+
+    
     /// Checks the permission status for accessing location services.
     ///
     /// This function handles all authorization statuses, including authorized, denied, not determined,
@@ -427,7 +538,7 @@ public class UIAppUtils {
     ///   - permission: A closure to be called with the result of the permission check, returning true if permission
     ///                 was granted and false otherwise.
     ///
-    public static func checkLocationPermission(showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
+    public static func checkLocationPermission(previouslyDeniedOption: ZippedUIAppUtils.PreviouslyDeniedOption, permission: @escaping(_ granted: Bool) -> Void) {
         
         let authorizationStatus = CLLocationManager.authorizationStatus()
         
@@ -438,26 +549,9 @@ public class UIAppUtils {
             
         case .denied:
             
-            if showGoToAppSettingsOption {
+            switch previouslyDeniedOption {
                 
-                DispatchQueue.main.async {
-                    
-                    let alert = UIAlertController(
-                        title: "Permission Denied",
-                        message: "You previously denied location permission. Would you like to grant the location permission now?",
-                        preferredStyle: .alert
-                    )
-                    
-                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
-                        UIAppUtils.goToAppSettings()
-                        alert.dismiss(animated: true)
-                    })
-                    alert.addAction(UIAlertAction(title: "No", style: .default))
-                    
-                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
-                }
-                
-            } else {
+            case .showAlert:
                 
                 DispatchQueue.main.async {
                     
@@ -469,8 +563,29 @@ public class UIAppUtils {
                     
                     alert.addAction(UIAlertAction(title: "OK", style: .default))
                     
-                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
                 }
+                
+            case .showGoToSettingsOption:
+                
+                DispatchQueue.main.async {
+                    
+                    let alert = UIAlertController(
+                        title: "Permission Denied",
+                        message: "You previously denied location permission. Would you like to grant the location permission now?",
+                        preferredStyle: .alert
+                    )
+                    
+                    alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
+                        goToAppSettings()
+                    })
+                    alert.addAction(UIAlertAction(title: "No", style: .default))
+                    
+                    getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                }
+                
+            case .doNothing:
+                break
             }
             
             permission(false)
@@ -505,7 +620,7 @@ public class UIAppUtils {
                 
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 
-                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                getTopMostViewController()?.present(alert, animated: true, completion: nil)
             }
             
             permission(false)
@@ -523,7 +638,7 @@ public class UIAppUtils {
                 
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 
-                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                getTopMostViewController()?.present(alert, animated: true, completion: nil)
             }
             
             permission(false)
