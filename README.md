@@ -122,7 +122,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
     Enable users to compose and send emails directly from the app. Includes a delegate to report email status (saved, sent, cancelled, etc.). If the device cannot send emails using the default mail app or if it's not configured, provide an option to redirect to an external email app. For more details, see the [ExternalMailOptions](#externalmailoptions) section.
 
     ```swift
-    UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "") { result in
+    UIAppUtils.openEmailIntent(externalMailOption: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "") { result in
             
     switch result {
         case .cancelled:
@@ -150,10 +150,10 @@ To use UIAppUtils in your project, you can call its static methods directly:
 
     Check for camera(video) or microphone(audio) permissions and handle the response.
 
-    The function handles all authorization statuses and shows appropriate alert messages for all cases (not determine, first-time denied, previously denied, restricted, and unknown).
+    The function handles all authorization statuses for all cases (authorized, not determine, first-time denied, previously denied, restricted, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the previouslyDeniedOption parameter. For more details, refer to the [PreviouslyDeniedOption](#previouslydeniedoptions) section.
 
     ```swift 
-    UIAppUtils.checkMediaPermission(mediaType: .video, showGoToAppSettingsOption: true) { granted in // show an option to navigate to app settings for if permission has been previously denied.
+    UIAppUtils.checkMediaPermission(mediaType: .video, previouslyDeniedOption: .showGoToSettingsOption) { granted in // show an option to navigate to app settings for if permission has been previously denied.
         if granted { 
             print("Camera access granted.") 
         } else { 
@@ -161,16 +161,56 @@ To use UIAppUtils in your project, you can call its static methods directly:
         } 
     }
     ```
+10. **Check Notification Permission:** 
 
-> ### ExternalMailOptions
+    Check for notification permission and handle the response.
+
+    The function handles all authorization statuses for all cases (authorized, not determine, first-time denied, perviously denied, provisional, ephemeral, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the previouslyDeniedOption parameter. For more details, refer to the [PreviouslyDeniedOption](#previouslydeniedoptions) section.
+
+    ```swift 
+    UIAppUtils.checkNotificationPermission(previouslyDeniedOption: .showAlert) { granted in // show an option to navigate to app settings for if permission has been previously denied.
+        if granted { 
+            print("Notification access granted.") 
+        } else { 
+            print("Notification access denied.") 
+        } 
+    }
+    ```
+11. **Check Location Permission:** 
+
+    Check for location permission and handle the response.
+
+    The function handles all authorization statuses for all cases (authorizedAlways, authorizedWhenInUse, notDetermined, firstTimeDenied, previouslyDenied, restricted, and unknown) and shows appropriate alert messages (if necessary/specified). If the user denies permission on the first attempt, they can select their preferred action using the previouslyDeniedOption parameter. For more details, refer to the [PreviouslyDeniedOption](#previouslydeniedoptions) section.
+
+    ```swift 
+    UIAppUtils.checkLocationPermission(previouslyDeniedOption: .doNothing) { granted in // show an option to navigate to app settings for if permission has been previously denied.
+        if granted { 
+            print("Location access granted.") 
+        } else { 
+            print("Location access denied.") 
+        } 
+    }
+    ```
+
+> ### ExternalMailOption
 >
-> The `ExternalMailOptions` enum provides options for managing email scenarios:
+> The `ExternalMailOption` enum provides options for managing email scenarios:
 >
 > - *showConfirmationPrompt*: Prompts for confirmation before accessing an external email app.
 > - *goDirectlyToExternalMail*: Redirects to an external email app without confirmation.
 > - *doNotGoToExternalMail*: Does not redirect to an external email app.
 >
 > Use these options to enhance user experience based on your app's needs.
+
+> ### PreviouslyDeniedOption
+>
+> The `PreviouslyDeniedOption` enum provides options for handling previously denied permissions:
+>
+> - *showAlert*: Shows an alert to the user.
+> - *showGoToSettingsOption*: Displays an option to navigate to app settings.
+> - *doNothing*: Continues without any prompt.
+>
+> Use these options to manage user experience based on permission states in your app.
 
 ## License
 
