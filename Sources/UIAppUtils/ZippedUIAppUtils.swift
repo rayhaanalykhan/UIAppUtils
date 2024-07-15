@@ -36,7 +36,7 @@ public class ZippedUIAppUtils {
     }
     
     /// Enum representing different options for handling mail if device is not capable of sending emails using MFMailComposeViewController.
-    public enum ExternalMailOptions: String {
+    public enum ExternalMailOption: String {
         
         /// Show a confirmation prompt before accessing external mail.
         case showConfirmationPrompt

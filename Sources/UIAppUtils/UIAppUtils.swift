@@ -186,7 +186,7 @@ public class UIAppUtils {
      
      - Important: The completion handler will only trigger if the email is sent within the app using `MFMailComposeViewController`.
      */
-    public static func openEmailIntent(from viewController: UIViewController? = getTopMostViewController(), externalMailOptions: ZippedUIAppUtils.ExternalMailOptions, with emailAddresses: [String], subject: String?, body: String?, completion: ((_ result: MFMailComposeResult) -> Void)? = nil) {
+    public static func openEmailIntent(from viewController: UIViewController? = getTopMostViewController(), externalMailOption: ZippedUIAppUtils.ExternalMailOption, with emailAddresses: [String], subject: String?, body: String?, completion: ((_ result: MFMailComposeResult) -> Void)? = nil) {
         
         guard let viewController else {
             print("UIAppUtils -> Error: View controller is nil.")

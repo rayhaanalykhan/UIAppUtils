@@ -143,7 +143,7 @@ To use UIAppUtils in your project, you can call its static methods directly:
     ```swift
     // Alternate
     // You can even ignore the completion entirely.
-    UIAppUtils.openEmailIntent(externalMailOptions: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "")
+    UIAppUtils.openEmailIntent(externalMailOption: .showConfirmationPrompt, with: ["rayhaanalykhan@gmail.com"], subject: "", body: "")
     ```
 
 8. **Check Media Permissions:** 
