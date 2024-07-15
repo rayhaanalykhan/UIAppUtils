@@ -144,7 +144,7 @@ public class UIAppUtils {
     /// Checks the permission status for accessing media hardware.
     ///
     /// This function handles all authorization statuses, including authorized, denied, not determined,
-    /// and restricted. If permission is denied or restricted, appropriate alert messages are displayed
+    /// restricted, and unknown. If permission is denied or restricted, appropriate alert messages are displayed
     /// to the user. If the authorization status is not determined, the user is prompted for permission.
     ///
     /// - Parameters:
@@ -161,8 +161,8 @@ public class UIAppUtils {
         switch authorizationStatus {
             
         case .authorized:
+            
             permission(true)
-            break
             
         case .denied:
             
@@ -202,8 +202,6 @@ public class UIAppUtils {
             
             permission(false)
             
-            break
-            
         case .notDetermined:
             
             DispatchQueue.main.async {
@@ -211,6 +209,7 @@ public class UIAppUtils {
                 AVCaptureDevice.requestAccess(for: mediaType.avMediaType) { granted in
                     
                     if granted {
+                        
                         permission(true)
                         
                     } else {
@@ -232,7 +231,6 @@ public class UIAppUtils {
                     }
                 }
             }
-            break
             
         case .restricted:
             
@@ -250,8 +248,6 @@ public class UIAppUtils {
             }
             permission(false)
             
-            break
-            
             // Handle any future unknown cases
         @unknown default:
             
@@ -267,9 +263,8 @@ public class UIAppUtils {
                 
                 getTopMostViewController()?.present(alert, animated: true, completion: nil)
             }
-            permission(false)
             
-            break
+            permission(false)
         }
     }
     
@@ -420,12 +415,19 @@ public class UIAppUtils {
         }
     }
     
-    public static func checkLocationPermission(from viewController: UIViewController? = UIAppUtils.getTopMostViewController(), showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
-        
-        guard let viewController else {
-            print("UIAppUtils -> Error: View controller is nil.")
-            return
-        }
+    /// Checks the permission status for accessing location services.
+    ///
+    /// This function handles all authorization statuses, including authorized, denied, not determined,
+    /// restricted, and unknown. If permission is denied or restricted, appropriate alert messages are displayed
+    /// to the user. If the authorization status is not determined, the user is prompted for permission.
+    ///
+    /// - Parameters:
+    ///   - showGoToAppSettingsOption: A boolean value indicating whether to show an option to navigate to app settings
+    ///                                for granting permission if permission has been previously denied.
+    ///   - permission: A closure to be called with the result of the permission check, returning true if permission
+    ///                 was granted and false otherwise.
+    ///
+    public static func checkLocationPermission(showGoToAppSettingsOption: Bool, permission: @escaping(_ granted: Bool) -> Void) {
         
         let authorizationStatus = CLLocationManager.authorizationStatus()
         
@@ -448,6 +450,7 @@ public class UIAppUtils {
                     
                     alert.addAction(UIAlertAction(title: "Yes", style: .default) { _ in
                         UIAppUtils.goToAppSettings()
+                        alert.dismiss(animated: true)
                     })
                     alert.addAction(UIAlertAction(title: "No", style: .default))
                     
@@ -479,6 +482,12 @@ public class UIAppUtils {
             locationDelegate.permission = permission
 
             locationDelegate.locationManager.delegate = locationDelegate
+            
+            // Add observer to handle the scenario when the user locks the screen
+            // while the permission prompt is active. If the user locks the screen,
+            // the prompt disappears, so this ensures we remove the completion handler
+            // and delegate immediately to prevent any unusual behavior.
+            NotificationCenter.default.addObserver(locationDelegate, selector: #selector(locationDelegate.handleAppDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
             
             DispatchQueue.main.async {
                 locationDelegate.locationManager.requestWhenInUseAuthorization()
@@ -585,7 +594,7 @@ class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
         handleAuthorizationChange(status: status)
     }
     
-    func handleAuthorizationChange(status: CLAuthorizationStatus) {
+    private func handleAuthorizationChange(status: CLAuthorizationStatus) {
         
         switch status {
             
@@ -597,11 +606,22 @@ class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
             
         case .denied:
             
+            DispatchQueue.main.async {
+                
+                let alert = UIAlertController(
+                    title: "Permission Denied",
+                    message: "Location access is denied",
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                
+                UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+            }
+            
             permission?(false)
             
             cleanupLocationManager()
-            
-            break
             
         case .notDetermined:
             // Do nothing here, wait for use to select an option
@@ -613,8 +633,6 @@ class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
             
             cleanupLocationManager()
             
-            break
-            
             // Handle any future unknown cases
         @unknown default:
             
@@ -622,11 +640,26 @@ class LocationPermissionDelegateHandler: NSObject, CLLocationManagerDelegate {
             
             cleanupLocationManager()
         }
+        
+        // Cases .restricted and default will never execute here because if they were to execute, they would have executed earlier when initially checking the location permission.
     }
     
-    func cleanupLocationManager() {
+    @objc func handleAppDidEnterBackground() {
+        
+        // This method is called when the app enters the background (on lock screen).
+        // The location manager delegate only triggers this for .notDetermined status,
+        // so no additional condition check is needed here.
+        cleanupLocationManager()
+        
+        //        if CLLocationManager.authorizationStatus() == .notDetermined {
+        //            cleanupLocationManager()
+        //        }
+    }
+    
+    private func cleanupLocationManager() {
         locationManager.delegate = nil
         permission = nil
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 }
 #endif
