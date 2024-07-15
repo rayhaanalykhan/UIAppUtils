@@ -169,7 +169,7 @@ public class UIAppUtils {
      
      - Parameters:
      - viewController: The view controller from which to present the mail compose view controller. Defaults to the topmost view controller.
-     - externalMailOptions: An enum representing different options for handling mail if the device is not capable of sending emails using MFMailComposeViewController.
+     - externalMailOption: An enum representing different options for handling mail if the device is not capable of sending emails using MFMailComposeViewController.
      - emailAddresses: An array of email addresses to set as recipients.
      - subject: The subject of the email.
      - body: The body of the email.
@@ -182,7 +182,7 @@ public class UIAppUtils {
      - `failed`: Mail failed
      - `unknown`: Unknown mail compose result
      
-     This function attempts to present the system's email composition interface (`MFMailComposeViewController`) from the specified or topmost view controller. If the device is not capable of sending emails using MFMailComposeViewController, you can specify alternative options using the `externalMailOptions` parameter. If `externalMailOptions` is set to proceed externally and no mail app is found, it prompts the user accordingly.
+     This function attempts to present the system's email composition interface (`MFMailComposeViewController`) from the specified or topmost view controller. If the device is not capable of sending emails using MFMailComposeViewController, you can specify alternative options using the `externalMailOption` parameter. If `externalMailOption` is set to proceed externally and no mail app is found, it prompts the user accordingly.
      
      - Important: The completion handler will only trigger if the email is sent within the app using `MFMailComposeViewController`.
      */
@@ -211,7 +211,7 @@ public class UIAppUtils {
             
         } else {
             
-            switch externalMailOptions {
+            switch externalMailOption {
                 
             case .showConfirmationPrompt:
                 
