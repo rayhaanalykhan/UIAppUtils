@@ -3,7 +3,7 @@
 //
 //  Created by rayhaanalykhan on 31/05/2024.
 //
-//  This file is part of AppUtils. For licensing information, see the LICENSE file.
+//  This file is part of UIAppUtils. For licensing information, see the LICENSE file.
 //
 
 #if canImport(UIKit)
