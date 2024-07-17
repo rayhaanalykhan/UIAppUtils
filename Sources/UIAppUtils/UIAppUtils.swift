@@ -18,12 +18,12 @@ public class UIAppUtils {
     private init() { }
     
     /// Returns the current version number of the app, or a default message if not found.
-    static var appVersion: String {
+    public static var appVersion: String {
         return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Version not available"
     }
     
     /// Returns the current build number of the app, or a default message if not found.
-    static var appBuild: String {
+    public static var appBuild: String {
         return Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Build number not available"
     }
     
