@@ -37,6 +37,7 @@ public class UIAppUtils {
     ///            the first window in the application's `windows` array.
     ///
     /// - Returns: The topmost view controller, or nil if no view controller is found.
+    ///
     public static func getTopMostViewController() -> UIViewController? {
         
         var currentViewController = UIApplication.shared.windows.first?.rootViewController
@@ -64,6 +65,7 @@ public class UIAppUtils {
     ///            the first window in the application's `windows` array.
     ///
     /// - Returns: An optional `UIImage` representing the screenshot of the current key window's view hierarchy.
+    ///
     public static func takeScreenshot() -> UIImage? {
         
         guard let window = UIApplication.shared.windows.first else {
@@ -128,6 +130,7 @@ public class UIAppUtils {
     /// - SeeAlso: `canOpenURL(_:)`, `open(_:options:completionHandler:)`
     ///
     /// - Important: The return value of this function is `@discardableResult`, indicating that it can be safely ignored if not needed.
+    ///
     @discardableResult
     public static func openURL(url: URL) -> Bool {
         
@@ -148,6 +151,7 @@ public class UIAppUtils {
     ///         the prompt may be displayed after a delay.
     /// - Warning: This function may not behave as expected on iPads with multiple scenes/windows, as it captures only
     ///            the first window in the application's `windows` array.
+    ///
     public static func requestReview() {
         
         // Check if the device is running iOS 14 or later
@@ -525,7 +529,6 @@ public class UIAppUtils {
         }
     }
 
-    
     /// Checks the permission status for accessing location services.
     ///
     /// This function handles all authorization statuses, including authorized, denied, not determined,

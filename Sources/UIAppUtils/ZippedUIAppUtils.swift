@@ -3,7 +3,7 @@
 //
 //  Created by rayhaanalykhan on 11/06/2024.
 //
-//  This file is part of AppUtils. For licensing information, see the LICENSE file.
+//  This file is part of UIAppUtils. For licensing information, see the LICENSE file.
 //
 
 import AVFoundation
