@@ -490,9 +490,13 @@ public class UIAppUtils {
             case .notDetermined:
                 
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                    
                     DispatchQueue.main.async {
+                        
                         if granted {
+                            
                             permission(true)
+                            
                         } else {
                             let alert = UIAlertController(
                                 title: "Permission Denied",
@@ -678,11 +682,20 @@ class MailComposeDelegateHandler: NSObject, MFMailComposeViewControllerDelegate 
                     
                     alert.addAction(UIAlertAction(title: "OK", style: .default))
                     
-                    UIAppUtils.getTopMostViewController()?.present(alert, animated: true, completion: nil)
+                    if let vc = UIAppUtils.getTopMostViewController() {
+                        
+                        vc.present(alert, animated: true)
+                        
+                    } else {
+                        self.completionHandler = nil
+                    }
                 }
                 
             } else {
+                
                 self.completionHandler?(result)
+                
+                self.completionHandler = nil
             }
         }
     }
