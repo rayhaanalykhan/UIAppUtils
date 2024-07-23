@@ -1,5 +1,5 @@
 //
-//  AppUtils.swift
+//  ZippedUIAppUtils.swift
 //
 //  Created by rayhaanalykhan on 11/06/2024.
 //
